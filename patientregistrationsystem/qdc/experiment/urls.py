@@ -1011,6 +1011,16 @@ urlpatterns = [
         name="pulsesequence_list",
     ),
     url(r"^pulsesequence/new/$", views.pulsesequence_create, name="pulsesequence_new"),
+    url(
+        r"^pulsesequence/(?P<pulsesequence_id>\d+)/$",
+        views.pulsesequence_setting_view,
+        name="pulsesequence_setting_view",
+    ),
+    url(
+        r"^pulsesequence/edit/(?P<pulsesequence_id>\d+)/$",
+        views.pulsesequence_update,
+        name="pulsesequence_setting_edit",
+    ),
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
     #    views.questionnaire_view,
