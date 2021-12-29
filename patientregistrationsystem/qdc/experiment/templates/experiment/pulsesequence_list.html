@@ -46,7 +46,7 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>{% trans "Identification" %}</th>
+                            <th>{% trans "Name" %}</th>
                             <th>{% trans "Description" %}</th>
                             <!-- <th>{% trans "Pulse Type" %}</th> -->
                         </tr>
@@ -54,16 +54,14 @@
                     <tbody>
                         {% for equipment in equipments %}
                         <tr>
-                            <td>{% if perms.experiment.register_equipment %}
+                            <td>
                                 <a data-toggle="tooltip" data-placement="left" title="{% trans " Visualize" %}"
                                     href="/experiment/pulsesequence/{{ equipment.id }}">
-                                    {{ equipment.identification }}
+                                    {{ equipment.name }}
                                 </a>
-                                {% else %}
-                                {{ equipment.identification }}
-                                {% endif %}
+                                
                             </td>
-                            <td>{{ equipment.manufacturer }}</td>
+                            <td>{{ equipment.description }}</td>
                             <!-- <td>
                                 {{ equipment.pulse_type|default:"" }}
                             </td> -->
