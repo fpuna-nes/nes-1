@@ -145,6 +145,7 @@ from .models import (
     FRMISetting,
     DataFile,
     MRIScanner,
+    PulseSequence,
 )
 
 from .forms import (
@@ -224,6 +225,7 @@ from .forms import (
     ResearchProjectOwnerForm,
     FRMISettingForm,
     MRIScannerForm,
+    PulseSequenceForm,
 )
 
 from .portal import (
@@ -16536,6 +16538,105 @@ def tms_setting_view(
     return render(request, template_name, context)
 
 
+# CRUD PulseSequence
+@login_required
+@permission_required("experiment.register_equipment")
+def pulsesequence_list(request, template_name="experiment/pulsesequence_list.html"):
+    return render(request, template_name, {"equipments": PulseSequence.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def pulsesequence_create(request, template_name="experiment/pulsesequence_register.html"):
+   
+
+    pulsesequence_form = PulseSequenceForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if pulsesequence_form.is_valid():
+                pulsesequence_added = pulsesequence_form.save(commit=False)
+                pulsesequence_added.experiment_id = experiment_id
+                pulsesequence_added.save()
+
+                messages.success(request, _("PulseSequence included successfully."))
+
+                redirect_url = reverse(
+                    "pulsesequence_setting_view", args=(pulsesequence_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "pulsesequence_form": pulsesequence_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def pulsesequence_setting_view(
+    request, tms_setting_id, template_name="experiment/tms_setting_register.html"
+):
+
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
+    tms_setting_form = TMSSettingForm(request.POST or None, instance=tms_setting)
+
+    for field in tms_setting_form.fields:
+        tms_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    can_change = get_can_change(request.user, tms_setting.experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST["action"] == "remove":
+
+                experiment_id = tms_setting.experiment_id
+
+                tms_setting.delete()
+
+                messages.success(request, _("TMS setting was removed successfully."))
+
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            if request.POST["action"][:7] == "remove-":
+                # If action starts with 'remove-' it means that a setting should be removed from the tms_setting.
+                tms_setting_type = request.POST["action"][7:]
+
+                setting_to_be_deleted = None
+
+                if tms_setting_type == "tms_device":
+                    setting_to_be_deleted = get_object_or_404(
+                        TMSDeviceSetting, pk=tms_setting_id
+                    )
+
+                if tms_setting_type == "coil_model":
+                    setting_to_be_deleted = get_object_or_404(
+                        TMSDeviceSetting, pk=tms_setting_id
+                    )
+
+                if setting_to_be_deleted:
+                    setting_to_be_deleted.delete()
+
+                messages.success(request, _("Setting was removed successfully."))
+
+                redirect_url = reverse("tms_setting_view", args=(tms_setting.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "can_change": can_change,
+        "tms_setting_form": tms_setting_form,
+        "experiment": tms_setting.experiment,
+        "tms_setting": tms_setting,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
 @login_required
 @permission_required("experiment.change_experiment")
 def tms_setting_update(
@@ -17078,6 +17179,11 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
             "item": _("RMI Scanner Device"),
             "href": reverse("mriscanner_list", args=()),
             "quantity": MRIScanner.objects.all().count(),
+        },
+        {
+            "item": _("Pulse Sequence"),
+            "href": reverse("pulsesequence_list", args=()),
+            "quantity": PulseSequence.objects.all().count(),
         },
     ]
 

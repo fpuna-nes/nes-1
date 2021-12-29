@@ -1004,6 +1004,13 @@ urlpatterns = [
         views.frmi_solution_update,
         name="frmi_solution_edit",
     ),
+    # register PulseSequence device
+    url(
+        r"^pulsesequencedevice/list/$",
+        views.pulsesequence_list,
+        name="pulsesequence_list",
+    ),
+    url(r"^pulsesequence/new/$", views.pulsesequence_create, name="pulsesequence_new"),
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
     #    views.questionnaire_view,
