@@ -34,4 +34,4 @@ docker exec -ti nes bash
 # postgresql.conf =>     listen_address = '*'
 # pg_hba.conf =>      host all all 0.0.0.0/0 trust
 
-# Set postgres pass => ALTER USER user_name WITH PASSWORD 'new_password';
+# Set postgres pass => ALTER USER postgres WITH PASSWORD 'new_password';
