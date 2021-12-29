@@ -349,6 +349,16 @@ urlpatterns = [
     # register MRI Scanner
     url(r"^mriscanner/list/$", views.mriscanner_list, name="mriscanner_list"),
     url(r"^mriscanner/new/$", views.mriscanner_create, name="mriscaner_new"),
+    url(
+        r"^mriscanner/(?P<mriscanner_id>\d+)/$",
+        views.mriscanner_view,
+        name="mriscanner_view",
+    ),
+    url(
+        r"^mriscanner/edit/(?P<mriscanner_id>\d+)/$",
+        views.mriscanner_update,
+        name="mriscanner_edit",
+    ),
     # register TMS device
     url(r"^tmsdevice/list/$", views.tmsdevice_list, name="tmsdevice_list"),
     url(r"^tmsdevice/new/$", views.tmsdevice_create, name="tmsdevice_new"),

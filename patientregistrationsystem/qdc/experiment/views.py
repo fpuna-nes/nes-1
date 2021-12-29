@@ -3513,6 +3513,42 @@ def mriscanner_list(request, template_name="experiment/mriscanner_list.html"):
 
 @login_required
 @permission_required("experiment.register_equipment")
+def mriscanner_view(
+    request, mriscanner_id, template_name="experiment/mriscanner_register.html"
+):
+    mriscanner = get_object_or_404(MRIScanner, pk=mriscanner_id)
+
+    mriscanner_form = MRIScannerForm(request.POST or None, instance=mriscanner)
+
+    for field in mriscanner_form.fields:
+        mriscanner_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+
+            try:
+                mriscanner.delete()
+                messages.success(request, _("MRIScanner removed successfully."))
+                return redirect("mriscanner_list")
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete mriscanner."))
+                redirect_url = reverse("mriscanner_view", args=(mriscanner_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    tags = get_tags(mriscanner_id, "MRIScanner")
+
+    context = {
+        "can_change": True,
+        "equipment": mriscanner,
+        "equipment_form": mriscanner_form,
+        "tags": tags,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.register_equipment")
 def mriscanner_create(request, template_name="experiment/mriscanner_register.html"):
 
     mriscanner_form = MRIScannerForm(
@@ -3531,12 +3567,12 @@ def mriscanner_create(request, template_name="experiment/mriscanner_register.htm
 
                 on_tags = get_tag_ids_from_post(request.POST)
 
-                equipment_tags_update(mriscanner_added.id, on_tags, "FMRI Machine")
+                equipment_tags_update(mriscanner_added.id, on_tags, "MRIScanner")
 
-                tags = get_tags(mriscanner_added.id, "FMRI Machine")
+                tags = get_tags(mriscanner_added.id, "MRIScanner")
 
                 messages.success(request, _(" created successfully."))
-                redirect_url = reverse("amplifier_view", args=(mriscanner_added.id,))
+                redirect_url = reverse("mriscanner_view", args=(mriscanner_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
             else:
@@ -3549,6 +3585,44 @@ def mriscanner_create(request, template_name="experiment/mriscanner_register.htm
         "equipment_form": mriscanner_form,
         "creating": True,
         "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def mriscanner_update(
+    request, mriscanner_id, template_name="experiment/mriscanner_register.html"
+):
+    mriscanner = get_object_or_404(MRIScanner, pk=mriscanner_id)
+
+    mriscanner_form = MRIScannerForm(request.POST or None, instance=mriscanner)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if mriscanner_form.is_valid():
+                new_tags = get_tag_ids_from_post(request.POST)
+                changed_tags = equipment_tags_update(
+                    mriscanner_id, new_tags, "MRIScanner"
+                )
+
+                if mriscanner_form.has_changed() or changed_tags:
+                    mriscanner_form.save()
+                    messages.success(request, _("MRIScanner updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("mriscanner_view", args=(mriscanner.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    tags = get_tags(mriscanner_id, "MRIScanner")
+
+    context = {
+        "equipment": mriscanner,
+        "equipment_form": mriscanner_form,
+        "editing": True,
+        "tags": tags,
     }
 
     return render(request, template_name, context)
