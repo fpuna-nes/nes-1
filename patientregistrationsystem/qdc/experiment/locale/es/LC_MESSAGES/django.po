@@ -1665,12 +1665,12 @@ msgstr "Agregar participante"
 #: experiment/templates/experiment/add_participants.html:66
 #: experiment/templates/experiment/subjects.html:103
 msgid "Type participant name, CPF or code"
-msgstr "Digite nome do participante, CPF ou código"
+msgstr "Digite nombre de participante, CPF o código"
 
 #: experiment/templates/experiment/add_participants.html:66
 #: experiment/templates/experiment/subjects.html:104
 msgid "Type participant code"
-msgstr "Escriba el nombre del participante, CPF o código"
+msgstr "Escriba el código del participante"
 
 #: experiment/templates/experiment/add_participants.html:78
 #: experiment/templates/experiment/subjects.html:120
@@ -1845,6 +1845,7 @@ msgid "Amplifier detection type"
 msgstr "Tipo de detección de amplificador"
 
 #: experiment/templates/experiment/amplifier_register.html:256
+#: experiment/templates/experiment/mriscanner_register.html:209
 msgid "Are you sure you want to delete amplifier?"
 msgstr "¿Estás seguro de que quieres eliminar el amplificador?"
 
@@ -2411,7 +2412,7 @@ msgstr "Configuración de EEG"
 #: experiment/templates/experiment/eeg_setting_eeg_electrode_net_system.html:66
 #: experiment/views.py:17009
 msgid "EEG electrode localization system"
-msgstr "Sistema de localização de eletrodos de EEG"
+msgstr "Sistema de localización de electrodos de EEG"
 
 #: experiment/templates/experiment/eeg_electrode_cap_coordinates_register.html:54
 #: experiment/templates/experiment/eeg_electrode_coordinates_register.html:88
@@ -3381,7 +3382,7 @@ msgstr "Nuevo experimento"
 
 #: experiment/templates/experiment/experiment_register.html:100
 msgid "Project info URL"
-msgstr "URL do proyecto"
+msgstr "URL del proyecto"
 
 #: experiment/templates/experiment/experiment_register.html:141
 #: experiment/templates/experiment/publication_register.html:121

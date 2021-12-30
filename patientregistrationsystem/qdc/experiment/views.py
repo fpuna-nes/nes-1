@@ -145,6 +145,7 @@ from .models import (
     FRMISetting,
     DataFile,
     MRIScanner,
+    PulseSequence,
 )
 
 from .forms import (
@@ -224,6 +225,7 @@ from .forms import (
     ResearchProjectOwnerForm,
     FRMISettingForm,
     MRIScannerForm,
+    PulseSequenceForm,
 )
 
 from .portal import (
@@ -16536,6 +16538,105 @@ def tms_setting_view(
     return render(request, template_name, context)
 
 
+# CRUD PulseSequence
+@login_required
+@permission_required("experiment.register_equipment")
+def pulsesequence_list(request, template_name="experiment/pulsesequence_list.html"):
+    return render(request, template_name, {"equipments": PulseSequence.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def pulsesequence_create(request, template_name="experiment/pulsesequence_register.html"):
+   
+
+    pulsesequence_form = PulseSequenceForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if pulsesequence_form.is_valid():
+                pulsesequence_added = pulsesequence_form.save(commit=False)
+                pulsesequence_added.save()
+
+                messages.success(request, _("PulseSequence included successfully."))
+
+                redirect_url = reverse(
+                    "pulsesequence_setting_view", args=(pulsesequence_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "pulsesequence_setting_form": pulsesequence_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def pulsesequence_setting_view(
+    request, pulsesequence_id, template_name="experiment/pulsesequence_register.html"
+):
+
+    pulsesequence_setting = get_object_or_404(PulseSequence, pk=pulsesequence_id)
+    pulsesequence_setting_form = PulseSequenceForm(request.POST or None, instance=pulsesequence_setting)
+
+    for field in pulsesequence_setting_form.fields:
+        pulsesequence_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+
+            pulsesequence_setting.delete()
+
+            messages.success(request, _("Pulse Sequence setting was removed successfully."))
+
+            redirect_url = reverse("pulsesequence_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "pulsesequence_setting_form": pulsesequence_setting_form,
+        "pulsesequence": pulsesequence_setting,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.register_equipment")
+def pulsesequence_update(
+    request, pulsesequence_id, template_name="experiment/pulsesequence_register.html"
+):
+    pulsesequence = get_object_or_404(PulseSequence, pk=pulsesequence_id)
+
+    pulsesequence_form = PulseSequenceForm(request.POST or None, instance=pulsesequence)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if pulsesequence_form.is_valid():
+
+                if pulsesequence_form.has_changed():
+                    pulsesequence_form.save()
+                    messages.success(request, _("Pulse Sequence updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("pulsesequence_setting_view", args=(pulsesequence.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    
+    context = {
+        "pulsesequence_setting": pulsesequence,
+        "pulsesequence_setting_form": pulsesequence_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD PulseSequence 
+
+
 @login_required
 @permission_required("experiment.change_experiment")
 def tms_setting_update(
@@ -17078,6 +17179,11 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
             "item": _("RMI Scanner Device"),
             "href": reverse("mriscanner_list", args=()),
             "quantity": MRIScanner.objects.all().count(),
+        },
+        {
+            "item": _("Pulse Sequence"),
+            "href": reverse("pulsesequence_list", args=()),
+            "quantity": PulseSequence.objects.all().count(),
         },
     ]
 
