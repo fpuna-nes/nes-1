@@ -16566,7 +16566,7 @@ def pulsesequence_create(request, template_name="experiment/pulsesequence_regist
                 return HttpResponseRedirect(redirect_url)
 
     context = {
-        "pulsesequence_form": pulsesequence_form,
+        "pulsesequence_setting_form": pulsesequence_form,
         "creating": True,
         "editing": True,
     }
@@ -16634,6 +16634,8 @@ def pulsesequence_update(
     }
 
     return render(request, template_name, context)
+# end CRUD PulseSequence 
+
 
 @login_required
 @permission_required("experiment.change_experiment")
