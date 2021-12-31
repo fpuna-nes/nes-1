@@ -1021,6 +1021,40 @@ urlpatterns = [
         views.pulsesequence_update,
         name="pulsesequence_setting_edit",
     ),
+    # register PulseShape device
+    url(
+        r"^pulseshapedevice/list/$",
+        views.pulseshape_list,
+        name="pulseshape_list",
+    ),
+    url(r"^pulseshape/new/$", views.pulseshape_create, name="pulseshape_new"),
+    url(
+        r"^pulseshape/(?P<pulseshape_id>\d+)/$",
+        views.pulseshape_setting_view,
+        name="pulseshape_setting_view",
+    ),
+    url(
+        r"^pulseshape/edit/(?P<pulseshape_id>\d+)/$",
+        views.pulseshape_update,
+        name="pulseshape_setting_edit",
+    ),
+    # register SpoilingType device
+    url(
+        r"^spoilingtypedevice/list/$",
+        views.spoilingtype_list,
+        name="spoilingtype_list",
+    ),
+    url(r"^spoilingtype/new/$", views.spoilingtype_create, name="spoilingtype_new"),
+    url(
+        r"^spoilingtype/(?P<spoilingtype_id>\d+)/$",
+        views.spoilingtype_setting_view,
+        name="spoilingtype_setting_view",
+    ),
+    url(
+        r"^spoilingtype/edit/(?P<spoilingtype_id>\d+)/$",
+        views.spoilingtype_update,
+        name="spoilingtype_setting_edit",
+    ),
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
     #    views.questionnaire_view,

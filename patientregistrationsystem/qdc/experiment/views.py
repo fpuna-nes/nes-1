@@ -52,6 +52,7 @@ from survey.survey_utils import QuestionnaireUtils, find_questionnaire_name
 from .models import (
     Experiment,
     ExperimentResearcher,
+    PulseShape,
     Subject,
     QuestionnaireResponse,
     SubjectOfGroup,
@@ -146,6 +147,8 @@ from .models import (
     DataFile,
     MRIScanner,
     PulseSequence,
+    PulseShape,
+    SpoilingType,
 )
 
 from .forms import (
@@ -226,6 +229,8 @@ from .forms import (
     FRMISettingForm,
     MRIScannerForm,
     PulseSequenceForm,
+    PulseShapeForm,
+    SpoilingTypeForm,
 )
 
 from .portal import (
@@ -16636,6 +16641,202 @@ def pulsesequence_update(
     return render(request, template_name, context)
 # end CRUD PulseSequence 
 
+# CRUD PulseShape
+@login_required
+@permission_required("experiment.register_equipment")
+def pulseshape_list(request, template_name="experiment/pulseshape_list.html"):
+    return render(request, template_name, {"equipments": PulseShape.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def pulseshape_create(request, template_name="experiment/pulseshape_register.html"):
+   
+
+    pulseshape_form = PulseShapeForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if pulseshape_form.is_valid():
+                pulseshape_added = pulseshape_form.save(commit=False)
+                pulseshape_added.save()
+
+                messages.success(request, _("PulseShape included successfully."))
+
+                redirect_url = reverse(
+                    "pulseshape_setting_view", args=(pulseshape_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "pulseshape_setting_form": pulseshape_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def pulseshape_setting_view(
+    request, pulseshape_id, template_name="experiment/pulseshape_register.html"
+):
+
+    pulseshape_setting = get_object_or_404(PulseShape, pk=pulseshape_id)
+    pulseshape_setting_form = PulseShapeForm(request.POST or None, instance=pulseshape_setting)
+
+    for field in pulseshape_setting_form.fields:
+        pulseshape_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+
+            pulseshape_setting.delete()
+
+            messages.success(request, _("Pulse Shape setting was removed successfully."))
+
+            redirect_url = reverse("pulseshape_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "pulseshape_setting_form": pulseshape_setting_form,
+        "pulseshape": pulseshape_setting,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.register_equipment")
+def pulseshape_update(
+    request, pulseshape_id, template_name="experiment/pulseshape_register.html"
+):
+    pulseshape = get_object_or_404(PulseShape, pk=pulseshape_id)
+
+    pulseshape_form = PulseShapeForm(request.POST or None, instance=pulseshape)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if pulseshape_form.is_valid():
+
+                if pulseshape_form.has_changed():
+                    pulseshape_form.save()
+                    messages.success(request, _("Pulse Shape updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("pulseshape_setting_view", args=(pulseshape.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    
+    context = {
+        "pulsesehape_setting": pulseshape,
+        "pulseshape_setting_form": pulseshape_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD PulseShape
+
+
+# CRUD SpoilingType
+@login_required
+@permission_required("experiment.register_equipment")
+def spoilingtype_list(request, template_name="experiment/spoilingtype_list.html"):
+    return render(request, template_name, {"equipments": SpoilingType.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def spoilingtype_create(request, template_name="experiment/spoilingtype_register.html"):
+   
+
+    spoilingtype_form = SpoilingTypeForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if spoilingtype_form.is_valid():
+                spoilingtype_added = spoilingtype_form.save(commit=False)
+                spoilingtype_added.save()
+
+                messages.success(request, _("Spoiling Type included successfully."))
+
+                redirect_url = reverse(
+                    "spoilingtype_setting_view", args=(spoilingtype_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "spoilingtype_setting_form": spoilingtype_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def spoilingtype_setting_view(
+    request, spoilingtype_id, template_name="experiment/spoilingtype_register.html"
+):
+
+    spoilingtype_setting = get_object_or_404(SpoilingType, pk=spoilingtype_id)
+    spoilingtype_setting_form = SpoilingTypeForm(request.POST or None, instance=spoilingtype_setting)
+
+    for field in spoilingtype_setting_form.fields:
+        spoilingtype_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+
+            spoilingtype_setting.delete()
+
+            messages.success(request, _("Spoiling Type setting was removed successfully."))
+
+            redirect_url = reverse("spoilingtype_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "spoilingtype_setting_form": spoilingtype_setting_form,
+        "spoilingtype": spoilingtype_setting,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.register_equipment")
+def spoilingtype_update(
+    request, spoilingtype_id, template_name="experiment/spoilingtype_register.html"
+):
+    spoilingtype = get_object_or_404(SpoilingType, pk=spoilingtype_id)
+
+    spoilingtype_form = SpoilingTypeForm(request.POST or None, instance=spoilingtype)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if spoilingtype_form.is_valid():
+
+                if spoilingtype_form.has_changed():
+                    spoilingtype_form.save()
+                    messages.success(request, _("Spoiling Type updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("spoilingtype_setting_view", args=(spoilingtype.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    
+    context = {
+        "spoilingtype_setting": spoilingtype,
+        "spoilingtype_setting_form": spoilingtype,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD SpoilingType
 
 @login_required
 @permission_required("experiment.change_experiment")
@@ -17184,6 +17385,16 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
             "item": _("Pulse Sequence"),
             "href": reverse("pulsesequence_list", args=()),
             "quantity": PulseSequence.objects.all().count(),
+        },
+        {
+            "item": _("Pulse Shape"),
+            "href": reverse("pulseshape_list", args=()),
+            "quantity": PulseShape.objects.all().count(),
+        },
+        {
+            "item": _("Spoiling Type"),
+            "href": reverse("spoilingtype_list", args=()),
+            "quantity": SpoilingType.objects.all().count(),
         },
     ]
 
