@@ -2709,7 +2709,8 @@ class FRMISettingForm(ModelForm):
     class Meta:
         model = FRMISetting
 
-        fields = ["name", "description", "archivo"]
+        # fields = ["name", "description", "archivo"]
+        fields = ["name", "description"]
 
         widgets = {
             "name": TextInput(
@@ -2728,13 +2729,13 @@ class FRMISettingForm(ModelForm):
                     "data-error": _("Description must be filled."),
                 }
             ),
-            "archivo": FileInput(
-                attrs={
-                    "class": "form-control",
-                    "required": "",
-                    "data-error": _("Archivo must be filled."),
-                },
-            ),
+            # "archivo": FileInput(
+            #     attrs={
+            #         "class": "form-control",
+            #         "required": "",
+            #         "data-error": _("Archivo must be filled."),
+            #     },
+            # ),
         }
 
 

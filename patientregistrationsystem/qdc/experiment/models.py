@@ -1869,7 +1869,7 @@ class FRMISetting(models.Model):
     experiment = models.ForeignKey(Experiment)
     name = models.CharField(max_length=150)
     description = models.TextField()
-    archivo = models.FileField(upload_to=get_frmi_settings_dir, null=True, blank=True)
+    # archivo = models.FileField(upload_to=get_frmi_settings_dir, null=True, blank=True)
     # consultar a Luis G. sobre la idea de este campo
     copied_from = models.ForeignKey("self", null=True, related_name="children")
 
@@ -1878,10 +1878,10 @@ class FRMISetting(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:
-            saved_file = self.archivo
-            self.archivo = None
-            super(FRMISetting, self).save(*args, **kwargs)
-            self.archivo = saved_file
+            # saved_file = self.archivo
+            # self.archivo = None
+            # super(FRMISetting, self).save(*args, **kwargs)
+            # self.archivo = saved_file
             super(FRMISetting, self).save(*args, **kwargs)
         else:
             super(FRMISetting, self).save(*args, **kwargs)
