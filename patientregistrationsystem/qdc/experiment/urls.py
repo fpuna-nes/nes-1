@@ -1054,7 +1054,26 @@ urlpatterns = [
         r"^spoilingtype/edit/(?P<spoilingtype_id>\d+)/$",
         views.spoilingtype_update,
         name="spoilingtype_setting_edit",
+
     ),
+    # register parallel imaging device
+    url(
+        r"^parallelimagingdevice/list/$",
+        views.parallelimaging_list,
+        name="parallelimaging_list",
+    ),
+    url(r"^parallelimaging/new/$", views.parallelimaging_create, name="parallelimaging_new"),
+    url(
+        r"^parallelimaging/(?P<parallelimaging_id>\d+)/$",
+        views.parallelimaging_setting_view,
+        name="parallelimaging_setting_view",
+    ),
+    url(
+        r"^parallelimaging/edit/(?P<parallelimaging_id>\d+)/$",
+        views.parallelimaging_update,
+        name="parallelimaging_setting_edit",
+    ),
+
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
     #    views.questionnaire_view,
