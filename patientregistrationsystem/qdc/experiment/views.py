@@ -149,6 +149,8 @@ from .models import (
     PulseSequence,
     PulseShape,
     SpoilingType,
+    ParallelImaging,
+
 )
 
 from .forms import (
@@ -231,6 +233,7 @@ from .forms import (
     PulseSequenceForm,
     PulseShapeForm,
     SpoilingTypeForm,
+    ParallelImagingForm,
 )
 
 from .portal import (
@@ -16750,7 +16753,6 @@ def spoilingtype_list(request, template_name="experiment/spoilingtype_list.html"
 @login_required
 @permission_required("experiment.register_equipment")
 def spoilingtype_create(request, template_name="experiment/spoilingtype_register.html"):
-   
 
     spoilingtype_form = SpoilingTypeForm(request.POST or None)
 
@@ -16831,12 +16833,112 @@ def spoilingtype_update(
     
     context = {
         "spoilingtype_setting": spoilingtype,
-        "spoilingtype_setting_form": spoilingtype,
+        "spoilingtype_setting_form": spoilingtype_form,
         "editing": True,
     }
 
     return render(request, template_name, context)
 # end CRUD SpoilingType
+
+
+# CRUD ParallelImaging
+@login_required
+@permission_required("experiment.register_equipment")
+def parallelimaging_list(request, template_name="experiment/parallelimaging_list.html"):
+    return render(request, template_name, {"equipments": ParallelImaging.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def parallelimaging_create(request, template_name="experiment/parallelimaging_register.html"):
+   
+
+    parallelimaging_form = ParallelImagingForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if parallelimaging_form.is_valid():
+                parallelimaging_added = parallelimaging_form.save(commit=False)
+                parallelimaging_added.save()
+
+                messages.success(request, _("Parallel Imaging included successfully."))
+
+                redirect_url = reverse(
+                    "parallelimaging_setting_view", args=(parallelimaging_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "parallelimaging_setting_form": parallelimaging_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def parallelimaging_setting_view(
+    request, parallelimaging_id, template_name="experiment/parallelimaging_register.html"
+):
+
+    parallelimaging_setting = get_object_or_404(ParallelImaging, pk=parallelimaging_id)
+    parallelimaging_setting_form = ParallelImagingForm(request.POST or None, instance=parallelimaging_setting)
+
+    for field in parallelimaging_setting_form.fields:
+        parallelimaging_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+
+            parallelimaging_setting.delete()
+
+            messages.success(request, _("Parallel Imaging setting was removed successfully."))
+
+            redirect_url = reverse("parallelimaging_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "parallelimaging_setting_form": parallelimaging_setting_form,
+        "parallelimaging": parallelimaging_setting,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def parallelimaging_update(
+    request, parallelimaging_id, template_name="experiment/parallelimaging_register.html"
+):
+    parallelimaging = get_object_or_404(ParallelImaging, pk=parallelimaging_id)
+
+    parallelimaging_form = ParallelImagingForm(request.POST or None, instance=parallelimaging)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if parallelimaging_form.is_valid():
+
+                if parallelimaging_form.has_changed():
+                    parallelimaging_form.save()
+                    messages.success(request, _("Parallel Imaging updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("parallelimaging_setting_view", args=(parallelimaging.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    
+    context = {
+        "parallelimaging_setting": parallelimaging,
+        "parallelimaging_setting_form": parallelimaging_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD ParallelImaging
 
 @login_required
 @permission_required("experiment.change_experiment")
@@ -17395,6 +17497,11 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
             "item": _("Spoiling Type"),
             "href": reverse("spoilingtype_list", args=()),
             "quantity": SpoilingType.objects.all().count(),
+        },
+        {
+            "item": _("Parallel Imaging"),
+            "href": reverse("parallelimaging_list", args=()),
+            "quantity": ParallelImaging.objects.all().count(),
         },
     ]
 
