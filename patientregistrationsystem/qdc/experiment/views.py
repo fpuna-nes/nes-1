@@ -17522,12 +17522,12 @@ def frmi_setting_create(
 
     check_can_change(request.user, experiment.research_project)
 
-    frmi_setting_form = FRMISettingForm(request.POST or None, request.FILES)
+    mri_setting_form = FRMISettingForm(request.POST or None, request.FILES)
 
     if request.method == "POST":
         if request.POST["action"] == "save":
-            if frmi_setting_form.is_valid():
-                frmi_setting_added = frmi_setting_form.save(commit=False)
+            if mri_setting_form.is_valid():
+                frmi_setting_added = mri_setting_form.save(commit=False)
                 frmi_setting_added.experiment_id = experiment_id
                 frmi_setting_added.save()
                 messages.success(request, _("FRMI setting included successfully."))
@@ -17538,7 +17538,7 @@ def frmi_setting_create(
                 return HttpResponseRedirect(redirect_url)
 
     context = {
-        "frmi_setting_form": frmi_setting_form,
+        "mri_setting_form": mri_setting_form,
         "creating": True,
         "editing": True,
         "experiment": experiment,
@@ -17666,12 +17666,12 @@ def frmi_setting_view(
     request, frmi_setting_id, template_name="experiment/frmi_setting_register.html"
 ):
 
-    frmi_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
-    frmi_setting_form = FRMISettingForm(request.POST or None, instance=frmi_setting)
-    for field in frmi_setting_form.fields:
-        frmi_setting_form.fields[field].widget.attrs["disabled"] = True
+    mri_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
+    mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
+    for field in mri_setting_form.fields:
+        mri_setting_form.fields[field].widget.attrs["disabled"] = True
 
-    can_change = get_can_change(request.user, frmi_setting.experiment.research_project)
+    can_change = get_can_change(request.user, mri_setting.experiment.research_project)
 
     if request.method == "POST":
         if can_change:
@@ -17680,9 +17680,9 @@ def frmi_setting_view(
 
                 # TODO: checking if there is some FRMI Step using it
 
-                experiment_id = frmi_setting.experiment_id
+                experiment_id = mri_setting.experiment_id
 
-                frmi_setting.delete()
+                mri_setting.delete()
 
                 messages.success(request, _("FRMI setting was removed successfully."))
 
@@ -17718,14 +17718,14 @@ def frmi_setting_view(
 
                 messages.success(request, _("Setting was removed successfully."))
 
-                redirect_url = reverse("frmi_setting_view", args=(frmi_setting.id,))
+                redirect_url = reverse("frmi_setting_view", args=(mri_setting.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "can_change": can_change,
-        "frmi_setting_form": frmi_setting_form,
-        "experiment": frmi_setting.experiment,
-        "frmi_setting": frmi_setting,
+        "mri_setting_form": mri_setting_form,
+        "experiment": mri_setting.experiment,
+        "mri_setting": mri_setting,
         "editing": False,
     }
 
@@ -17737,51 +17737,28 @@ def frmi_setting_view(
 def frmi_setting_update(
     request, frmi_setting_id, template_name="experiment/frmi_setting_register.html"
 ):
-    frmi_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
+    mri_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
 
-    check_can_change(request.user, frmi_setting.experiment.research_project)
+    check_can_change(request.user, mri_setting.experiment.research_project)
 
-    frmi_setting_form = FRMISettingForm(request.POST or None, instance=frmi_setting)
+    mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
 
     if request.method == "POST":
         if request.POST["action"] == "save":
+            if mri_setting_form.is_valid():
+                if mri_setting_form.has_changed():
 
-            if frmi_setting_form.is_valid():
-                # if frmi_setting_form.has_changed():
-                dato_orthanc = request.FILES["archivo"]
-                dato_orthanc = dato_orthanc.read()
-                httpreq = httplib2.Http()
-                httpreq.add_credentials("orthanc", "orthanc")
-                (resp, content) = httpreq.request(
-                    "http://172.18.0.3:8042/instances",
-                    "POST",
-                    body=dato_orthanc,
-                    headers={"content-type": "application/octet-stream"},
-                )
-                logger.debug(resp)
-                respuesta = json.loads(content)
-                logger.debug(respuesta)
-                if (
-                    respuesta["Status"] == "Success"
-                    or respuesta["Status"] == "AlreadyStored"
-                ):
-                    frmi_setting_form.instance.idorthanc = respuesta["ID"]
-                    frmi_setting_form.save()
+                    mri_setting_form.save()
                     messages.success(request, _("Guardado exitosamente."))
                 else:
-                    messages.error(request, _("Error de orthanc"))
-
-                redirect_url = reverse("frmi_setting_view", args=(frmi_setting_id,))
-                return HttpResponseRedirect(redirect_url)
-            else:
-                messages.error(request, _("Ocurrio un error"))
-                logger.debug(frmi_setting_form.errors)
-
+                    messages.error(request, _("Ocurrio un error"))
+        redirect_url = reverse("frmi_setting_view", args=(frmi_setting_id,))
+        return HttpResponseRedirect(redirect_url)
     context = {
-        "frmi_setting_form": frmi_setting_form,
+        "mri_setting_form": mri_setting_form,
         "editing": True,
-        "experiment": frmi_setting.experiment,
-        "frmi_setting": frmi_setting,
+        "experiment": mri_setting.experiment,
+        "mri_setting": mri_setting,
     }
 
     return render(request, template_name, context)

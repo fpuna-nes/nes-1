@@ -983,12 +983,12 @@ urlpatterns = [
         name="frmi_setting_new",
     ),
     url(
-        r"^frmi_setting/(?P<frmi_setting_id>\d+)/$",
+        r"^mri_setting/(?P<frmi_setting_id>\d+)/$",
         views.frmi_setting_view,
         name="frmi_setting_view",
     ),
     url(
-        r"^frmi_setting/edit/(?P<frmi_setting_id>\d+)/$",
+        r"^mri_setting/edit/(?P<frmi_setting_id>\d+)/$",
         views.frmi_setting_update,
         name="frmi_setting_edit",
     ),
