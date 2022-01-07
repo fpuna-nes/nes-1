@@ -1073,7 +1073,22 @@ urlpatterns = [
         views.parallelimaging_update,
         name="parallelimaging_setting_edit",
     ),
-
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/$",
+        views.mri_setting_sequencespecific,
+        name="mri_setting_sequencespecific",
+    ),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/new$",
+        views.mri_machine_create,
+        name="mri_machine_create",
+    ),
+        url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)$",
+        views.frmi_machine_view,
+        name="frmi_machine_view",
+    ),
+    
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
     #    views.questionnaire_view,
