@@ -17953,36 +17953,55 @@ def frmi_machine_view(
 
                 # TODO: checking if there is some FRMI Step using it
 
-                experiment_id = mri_setting.experiment_id
+                fmri_machine.delete()
 
-                mri_setting.delete()
+                messages.success(request, _("FRMI machine was removed successfully."))
 
-                messages.success(request, _("FRMI setting was removed successfully."))
-
-                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                redirect_url = reverse("frmi_setting_view", args=(mri_setting_id,))
                 return HttpResponseRedirect(redirect_url)
 
-            if request.POST["action"][:7] == "remove-":
-                # If action starts with 'remove-' it means that an equipment should be removed from the eeg_setting.
-                frmi_setting_type = request.POST["action"][7:]
-
-                setting_to_be_deleted = None
-
-
-                # eeg_setting.eeg_machine_setting.delete()
-                if setting_to_be_deleted:
-                    setting_to_be_deleted.delete()
-
-                messages.success(request, _("Setting was removed successfully."))
-
-                redirect_url = reverse("frmi_setting_view", args=(mri_setting.id,))
-                return HttpResponseRedirect(redirect_url)
 
     context = {"fmri_machine_form": fmri_machine_form, 
                "mri_setting": mri_setting,
                "mri_machine_setting":fmri_machine,
                "list_of_mri_machines": list_of_mri_machines,
                "creating": False, 
-               "editing": False}
+               "editing": False,
+               "can_change": can_change,}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def frmi_machine_update(
+    request, mri_setting_id, frmi_machine_id, template_name="experiment/frmi_machine_register.html"
+):
+
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    fmri_machine = get_object_or_404(FMRIMachineSettings, pk=frmi_machine_id)
+    fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=fmri_machine)
+    list_of_mri_machines = MRIScanner.objects.all().distinct()
+
+    can_change = get_can_change(request.user, mri_setting.experiment.research_project)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if fmri_machine_form.is_valid():
+                if fmri_machine_form.has_changed():
+                    fmri_machine_form.save()
+                    messages.success(request, _("Guardado exitosamente."))
+                else:
+                    messages.error(request, _("Ocurrio un error"))
+        redirect_url = reverse("frmi_machine_view", args=(mri_setting_id, frmi_machine_id,))
+        return HttpResponseRedirect(redirect_url)
+
+
+    context = {"fmri_machine_form": fmri_machine_form, 
+               "mri_setting": mri_setting,
+               "mri_machine_setting":fmri_machine,
+               "list_of_mri_machines": list_of_mri_machines,
+               "creating": False, 
+               "editing": True,
+               "can_change": can_change,}
 
     return render(request, template_name, context)

@@ -1088,7 +1088,11 @@ urlpatterns = [
         views.frmi_machine_view,
         name="frmi_machine_view",
     ),
-    
+         url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)/edit$",
+        views.frmi_machine_update,
+        name="frmi_machine_update",
+    ),   
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
     #    views.questionnaire_view,
