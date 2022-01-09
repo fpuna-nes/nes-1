@@ -137,15 +137,16 @@
                             <tr>
                                 <td>{% trans "MRI Machine" %}</td>
                                 <td>
-                                    {% if mri_setting.eeg_solution_setting %}
-
-                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
-                                            {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
+                                    {% if mri_machine_list %}
+                                        {% for mri_machine in mri_machine_list %}  
+                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/mri_machine/{{ mri_machine.id }}">
+                                            {{ mri_machine.station_name }}
                                         </a>
-
+                                        <br>
+                                        {% endfor %}
                                     {% else %}
                                         {% if can_change %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                            <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/mri_machine/new"> {% trans "+ Add setting" %}</a>
                                         {% endif %}
                                     {% endif %}
                                 </td>

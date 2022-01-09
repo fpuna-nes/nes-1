@@ -17672,6 +17672,9 @@ def frmi_setting_view(
     mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
     for field in mri_setting_form.fields:
         mri_setting_form.fields[field].widget.attrs["disabled"] = True
+    
+    #configuraciones de mri
+    mri_machine_list = FMRIMachineSettings.objects.filter(frmi_setting=frmi_setting_id)
 
     can_change = get_can_change(request.user, mri_setting.experiment.research_project)
 
@@ -17728,6 +17731,7 @@ def frmi_setting_view(
         "mri_setting_form": mri_setting_form,
         "experiment": mri_setting.experiment,
         "mri_setting": mri_setting,
+        "mri_machine_list": mri_machine_list,
         "editing": False,
     }
 
