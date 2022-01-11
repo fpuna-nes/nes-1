@@ -2672,10 +2672,10 @@ class SpoilingSettingForm(ModelForm):
             ),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(SpoilingSettingForm, self).__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs):
+    #     super(SpoilingSettingForm, self).__init__(*args, **kwargs)
 
-        self.fields["type"].queryset = SpoilingType.objects.filter()
+    #     self.fields["type"].queryset = SpoilingType.objects.filter()
 
 
 class FMRIMachineSettingsForm(ModelForm):

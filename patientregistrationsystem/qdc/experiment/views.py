@@ -16982,10 +16982,11 @@ def spoiling_setting_create(request, template_name="experiment/mri_spoiling_sett
 @login_required
 @permission_required("experiment.view_researchproject")
 def spoiling_setting_view(
-    request, spoiling_setting_id, template_name="spoiling_setting_register.html"
+    request, spoiling_setting_id, template_name="experiment/mri_spoiling_setting_register.html"
 ):
-    spoiling_setting_list = SpoilingSetting.objects.all().distinct()
-    spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting_setting)
+    spoiling_type_list = SpoilingType.objects.all().distinct()
+    spoiling_setting_obj = get_object_or_404(SpoilingSetting, pk=spoiling_setting_id)
+    spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting_obj)
 
     for field in spoiling_setting_form.fields:
         spoiling_setting_form.fields[field].widget.attrs["disabled"] = True
@@ -16993,7 +16994,7 @@ def spoiling_setting_view(
     if request.method == "POST":
         if request.POST["action"] == "remove":
 
-            spoiling_setting.delete()
+            spoiling_setting_obj.delete()
 
             messages.success(request, _("Spoiling setting was removed successfully."))
 
@@ -17002,7 +17003,8 @@ def spoiling_setting_view(
 
     context = {
         "spoiling_setting_form": spoiling_setting_form,
-        "spoiling_setting_list": spoiling_setting_list,
+        "spoiling_type_list": spoiling_type_list,
+        "spoiling_setting_obj": spoiling_setting_obj,
         "editing": False,
     }
 
@@ -17012,11 +17014,12 @@ def spoiling_setting_view(
 @login_required
 @permission_required("experiment.register_equipment")
 def spoiling_setting_update(
-    request, spoiling_setting_id, template_name="experiment/spoiling_setting_register.html"
+    request, spoiling_setting_id, template_name="experiment/mri_spoiling_setting_register.html"
 ):
-    spoiling_setting = get_object_or_404(ParallelImaging, pk=spoiling_setting_id)
-
-    spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting)
+    spoiling_setting_obj = get_object_or_404(SpoilingSetting, pk=spoiling_setting_id)
+    spoiling_type_list = SpoilingType.objects.all().distinct()
+    
+    spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting_obj)
 
     if request.method == "POST":
         if request.POST["action"] == "save":
@@ -17028,13 +17031,14 @@ def spoiling_setting_update(
                 else:
                     messages.success(request, _("There is no changes to save."))
 
-                redirect_url = reverse("spoiling_setting_view", args=(spoiling_setting.id,))
+                redirect_url = reverse("spoiling_setting_view", args=(spoiling_setting_obj.id,))
                 return HttpResponseRedirect(redirect_url)
 
     
     context = {
-        "spoiling_setting": spoiling_setting,
         "spoiling_setting_form": spoiling_setting_form,
+        "spoiling_type_list": spoiling_type_list,
+        "spoiling_setting_obj": spoiling_setting_obj,
         "editing": True,
     }
 

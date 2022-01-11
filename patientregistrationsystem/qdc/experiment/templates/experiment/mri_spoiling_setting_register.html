@@ -72,10 +72,10 @@
                                 <label class="control-label">{% trans "Spoiling type" %} </label>
                                 <select class="form-control" name="type" id="id_type" 
                                 {% if not editing and not creating %}disabled{% endif %}>
-                                    <option value>-------</option>
-                                    {% for spoiling_type in spoiling_setting_list %}
+                                    <option value>---------</option>
+                                    {% for spoiling_type in spoiling_type_list %}
                                         <!-- <option {% if manufacturer.id == equipment_selected.manufacturer.id %}selected="selected"{% endif %} value="{{ manufacturer.id }}">{{ manufacturer.name }}</option> -->
-                                        <option {% if spoiling_type.id == spoiling_type_form.type %}selected="selected"{% endif %} value="{{ spoiling_type.id }}">{{ spoiling_type.name }}</option>
+                                        <option {% if spoiling_type.id == spoiling_setting_obj.type.id %}selected="selected"{% endif %} value="{{ spoiling_type.id }}">{{ spoiling_type.name }}</option>
                                     {% endfor %}
                                 </select>
                                 <div class="help-block with-errors"></div>
@@ -115,7 +115,7 @@
 
                 <div class="btn-toolbar">
                     {% if not editing %}
-                    <a href="/experiment/mri_spoiling_setting/edit/{{ spoiling_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                    <a href="mriscannersetting/machinesetting/edit/{{ spoiling_setting_obj.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     {% endif %}
                     {% if not editing and perms.experiment.delete_experiment %}
                     <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
