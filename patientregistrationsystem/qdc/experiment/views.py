@@ -151,7 +151,7 @@ from .models import (
     SpoilingType,
     ParallelImaging,
     SpoilingSetting,
-
+    FMRIMachineSettings,
 )
 
 from .forms import (
@@ -236,6 +236,8 @@ from .forms import (
     SpoilingTypeForm,
     ParallelImagingForm,
     SpoilingSettingForm,
+    SequenceSpecificForm,
+    FMRIMachineSettingsForm,
 )
 
 from .portal import (
@@ -17627,7 +17629,7 @@ def frmi_setting_create(
 
     check_can_change(request.user, experiment.research_project)
 
-    mri_setting_form = FRMISettingForm(request.POST or None, request.FILES)
+    mri_setting_form = FRMISettingForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST["action"] == "save":
@@ -17775,6 +17777,9 @@ def frmi_setting_view(
     mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
     for field in mri_setting_form.fields:
         mri_setting_form.fields[field].widget.attrs["disabled"] = True
+    
+    #configuraciones de mri
+    mri_machine_list = FMRIMachineSettings.objects.filter(frmi_setting=frmi_setting_id)
 
     can_change = get_can_change(request.user, mri_setting.experiment.research_project)
 
@@ -17831,6 +17836,7 @@ def frmi_setting_view(
         "mri_setting_form": mri_setting_form,
         "experiment": mri_setting.experiment,
         "mri_setting": mri_setting,
+        "mri_machine_list": mri_machine_list,
         "editing": False,
     }
 
@@ -17865,5 +17871,246 @@ def frmi_setting_update(
         "experiment": mri_setting.experiment,
         "mri_setting": mri_setting,
     }
+
+    return render(request, template_name, context)
+
+#CRUD SequenceSpecific
+@login_required
+@permission_required("experiment.change_experiment")
+def mri_setting_sequencespecific(
+    request,
+    mri_setting_id,
+    template_name="experiment/mri_setting_sequencespecific.html",
+):
+
+    mri_setting = get_object_or_404(
+        FRMISetting, pk=mri_setting_id
+    )
+
+    can_change = get_can_change(
+        request.user, mri_setting.experiment.research_project
+    )
+
+    creating = True
+
+    list_of_pulsesequence = PulseSequence.objects.all().distinct()
+    sequencespecific_form = SequenceSpecificForm(request.POST or None)
+
+    # if hasattr(emg_electrode_setting, "emg_amplifier_setting"):
+
+    #     emg_amplifier_setting = EMGAmplifierSetting.objects.get(
+    #         emg_electrode_setting=emg_electrode_setting
+    #     )
+
+    #     emg_amplifier_setting_form = EMGAmplifierSettingForm(
+    #         request.POST or None, instance=emg_amplifier_setting
+    #     )
+
+    #     equipment_selected = emg_amplifier_setting.amplifier
+
+    #     equipment_form = EquipmentForm(
+    #         request.POST or None, instance=equipment_selected
+    #     )
+
+    #     if hasattr(emg_amplifier_setting, "emg_analog_filter_setting"):
+
+    #         emg_analog_filter_setting = EMGAnalogFilterSetting.objects.get(
+    #             emg_electrode_setting=emg_amplifier_setting
+    #         )
+
+    #         emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(
+    #             request.POST or None, instance=emg_analog_filter_setting
+    #         )
+
+    #     else:
+    #         emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(
+    #             request.POST or None
+    #         )
+
+    #     for field in emg_amplifier_setting_form.fields:
+    #         emg_amplifier_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    #     for field in emg_analog_filter_setting_form.fields:
+    #         emg_analog_filter_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    # else:
+    #     creating = True
+    #     emg_amplifier_setting_form = EMGAmplifierSettingForm(request.POST or None)
+    #     emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(
+    #         request.POST or None
+    #     )
+    #     equipment_form = EquipmentForm(request.POST or None)
+
+    # if request.method == "POST":
+    #     if request.POST["action"] == "save":
+
+    #         if (
+    #             emg_amplifier_setting_form.is_valid()
+    #             and emg_analog_filter_setting_form.is_valid()
+    #         ):
+
+    #             changed = False
+
+    #             if (
+    #                 emg_amplifier_setting_form.has_changed()
+    #                 or emg_analog_filter_setting_form.has_changed()
+    #             ):
+
+    #                 new_setting = emg_amplifier_setting_form.save(commit=False)
+    #                 new_setting.emg_electrode_setting = emg_electrode_setting
+    #                 new_setting.save()
+
+    #                 new_setting = emg_analog_filter_setting_form.save(commit=False)
+    #                 new_setting.emg_electrode_setting = (
+    #                     emg_electrode_setting.emg_amplifier_setting
+    #                 )
+    #                 new_setting.save()
+    #                 changed = True
+
+    #             if changed:
+    #                 messages.success(
+    #                     request, _("EMG amplifier setting created successfully.")
+    #                 )
+    #             else:
+    #                 messages.success(request, _("There is no changes to save."))
+
+    #             redirect_url = reverse(
+    #                 "emg_electrode_setting_view", args=(emg_electrode_setting_id,)
+    #             )
+    #             return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "creating": creating,
+        "editing": False,
+        "can_change": can_change,
+        "list_pulsesequence":list_of_pulsesequence,
+        "mri_setting":mri_setting,
+        "sequencespecific_form": sequencespecific_form,
+        # "emg_electrode_setting": emg_electrode_setting,
+        # "emg_amplifier_setting_form": emg_amplifier_setting_form,
+        # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
+        # "equipment_form": equipment_form,
+        # "manufacturer_list": list_of_manufacturers,
+    }
+
+    return render(request, template_name, context)
+
+#CRUD MRI Machine
+@login_required
+@permission_required("experiment.register_equipment")
+def mri_machine_create(
+    request, 
+    mri_setting_id,
+    template_name="experiment/frmi_machine_register.html"
+):
+
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    fmri_machine_form = FMRIMachineSettingsForm(request.POST or None)
+
+    list_of_mri_machines = MRIScanner.objects.all().distinct()
+
+    if request.method == "POST":
+
+        if request.POST["action"] == "save":
+                # frmi_machine_added.mri_machine = request.POST["software_version"]
+            if fmri_machine_form.is_valid():
+
+                frmi_machine_added = fmri_machine_form.save(commit=False)
+                frmi_machine_added.frmi_setting=mri_setting
+                frmi_machine_added.save()
+
+                messages.success(request, _("FMRI machine created successfully."))
+                redirect_url = reverse(
+                    "frmi_machine_view", args=(mri_setting_id,frmi_machine_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _("Information not saved."))
+
+        else:
+            messages.warning(request, _("Action not available."))
+
+    context = {"fmri_machine_form": fmri_machine_form, 
+               "mri_setting": mri_setting,
+               "list_of_mri_machines": list_of_mri_machines,
+               "creating": True, 
+               "editing": True}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def frmi_machine_view(
+    request, mri_setting_id, frmi_machine_id, template_name="experiment/frmi_machine_register.html"
+):
+
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    fmri_machine = get_object_or_404(FMRIMachineSettings, pk=frmi_machine_id)
+    fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=fmri_machine)
+    list_of_mri_machines = MRIScanner.objects.all().distinct()
+
+    for field in fmri_machine_form.fields:
+        fmri_machine_form.fields[field].widget.attrs["disabled"] = True
+
+    can_change = get_can_change(request.user, mri_setting.experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST["action"] == "remove":
+                # TODO: checking if there is some FRMI Data using it
+
+                # TODO: checking if there is some FRMI Step using it
+
+                fmri_machine.delete()
+
+                messages.success(request, _("FRMI machine was removed successfully."))
+
+                redirect_url = reverse("frmi_setting_view", args=(mri_setting_id,))
+                return HttpResponseRedirect(redirect_url)
+
+
+    context = {"fmri_machine_form": fmri_machine_form, 
+               "mri_setting": mri_setting,
+               "mri_machine_setting":fmri_machine,
+               "list_of_mri_machines": list_of_mri_machines,
+               "creating": False, 
+               "editing": False,
+               "can_change": can_change,}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def frmi_machine_update(
+    request, mri_setting_id, frmi_machine_id, template_name="experiment/frmi_machine_register.html"
+):
+
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    fmri_machine = get_object_or_404(FMRIMachineSettings, pk=frmi_machine_id)
+    fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=fmri_machine)
+    list_of_mri_machines = MRIScanner.objects.all().distinct()
+
+    can_change = get_can_change(request.user, mri_setting.experiment.research_project)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if fmri_machine_form.is_valid():
+                if fmri_machine_form.has_changed():
+                    fmri_machine_form.save()
+                    messages.success(request, _("Guardado exitosamente."))
+                else:
+                    messages.error(request, _("Ocurrio un error"))
+        redirect_url = reverse("frmi_machine_view", args=(mri_setting_id, frmi_machine_id,))
+        return HttpResponseRedirect(redirect_url)
+
+
+    context = {"fmri_machine_form": fmri_machine_form, 
+               "mri_setting": mri_setting,
+               "mri_machine_setting":fmri_machine,
+               "list_of_mri_machines": list_of_mri_machines,
+               "creating": False, 
+               "editing": True,
+               "can_change": can_change,}
 
     return render(request, template_name, context)

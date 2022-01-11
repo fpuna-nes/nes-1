@@ -1076,6 +1076,7 @@ urlpatterns = [
         name="parallelimaging_setting_edit",
     ),
 
+
     # ADD MRI SPOILING SETTING
     url(
         r"^mriscannersetting/machinesetting/list/$",
@@ -1097,6 +1098,28 @@ urlpatterns = [
         views.spoiling_setting_update,
         name="spoiling_setting_edit",
     ),
+
+
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/$",
+        views.mri_setting_sequencespecific,
+        name="mri_setting_sequencespecific",
+    ),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/new$",
+        views.mri_machine_create,
+        name="mri_machine_create",
+    ),
+        url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)$",
+        views.frmi_machine_view,
+        name="frmi_machine_view",
+    ),
+         url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)/edit$",
+        views.frmi_machine_update,
+        name="frmi_machine_update",
+    ),   
 
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
