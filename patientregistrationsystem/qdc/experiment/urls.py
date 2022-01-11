@@ -1062,7 +1062,9 @@ urlpatterns = [
         views.parallelimaging_list,
         name="parallelimaging_list",
     ),
-    url(r"^parallelimaging/new/$", views.parallelimaging_create, name="parallelimaging_new"),
+    url(r"^parallelimaging/new/$", 
+        views.parallelimaging_create,
+        name="parallelimaging_new"),
     url(
         r"^parallelimaging/(?P<parallelimaging_id>\d+)/$",
         views.parallelimaging_setting_view,
@@ -1072,6 +1074,28 @@ urlpatterns = [
         r"^parallelimaging/edit/(?P<parallelimaging_id>\d+)/$",
         views.parallelimaging_update,
         name="parallelimaging_setting_edit",
+    ),
+
+    # ADD MRI SPOILING SETTING
+    url(
+        r"^mriscannersetting/machinesetting/list/$",
+        views.spoiling_setting_list,
+        name="spoiling_setting_list",
+    ),
+    url(
+        r"^mriscannersetting/machinesetting/new/$",
+        views.spoiling_setting_create,
+        name="spoiling_setting_new",
+    ),
+    url(
+        r"^mriscannersetting/machinesetting/(?P<spoiling_setting_id>\d+)/$",
+        views.spoiling_setting_view,
+        name="spoiling_setting_view",
+    ),
+    url(
+        r"^mriscannersetting/machinesetting/edit/(?P<spoiling_setting_id>\d+)/$",
+        views.spoiling_setting_update,
+        name="spoiling_setting_edit",
     ),
 
     # url(

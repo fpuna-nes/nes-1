@@ -150,6 +150,7 @@ from .models import (
     PulseShape,
     SpoilingType,
     ParallelImaging,
+    SpoilingSetting,
 
 )
 
@@ -234,6 +235,7 @@ from .forms import (
     PulseShapeForm,
     SpoilingTypeForm,
     ParallelImagingForm,
+    SpoilingSettingForm,
 )
 
 from .portal import (
@@ -16939,6 +16941,105 @@ def parallelimaging_update(
 
     return render(request, template_name, context)
 # end CRUD ParallelImaging
+
+# CRUD MRI_SPOILING_SETTING
+@login_required
+@permission_required("experiment.register_equipment")
+def spoiling_setting_list(request, template_name="experiment/mri_spoiling_setting_list.html"):
+    return render(request, template_name, {"equipments": SpoilingSetting.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def spoiling_setting_create(request, template_name="experiment/mri_spoiling_setting_register.html"):
+   
+    spoiling_setting_list = SpoilingType.objects.all().distinct()
+    spoiling_setting_form = SpoilingSettingForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if spoiling_setting_form.is_valid():
+                spoiling_setting_added = spoiling_setting_form.save(commit=False)
+                spoiling_setting_added.save()
+
+                messages.success(request, _("MRI Spoiling Setting included successfully."))
+
+                redirect_url = reverse(
+                    "spoiling_setting_view", args=(spoiling_setting_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "spoiling_setting_form": spoiling_setting_form,
+        "spoiling_setting_list" : spoiling_setting_list,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def spoiling_setting_view(
+    request, spoiling_setting_id, template_name="spoiling_setting_register.html"
+):
+    spoiling_setting_list = SpoilingSetting.objects.all().distinct()
+    spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting_setting)
+
+    for field in spoiling_setting_form.fields:
+        spoiling_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+
+            spoiling_setting.delete()
+
+            messages.success(request, _("Spoiling setting was removed successfully."))
+
+            redirect_url = reverse("spoiling_setting_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "spoiling_setting_form": spoiling_setting_form,
+        "spoiling_setting_list": spoiling_setting_list,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def spoiling_setting_update(
+    request, spoiling_setting_id, template_name="experiment/spoiling_setting_register.html"
+):
+    spoiling_setting = get_object_or_404(ParallelImaging, pk=spoiling_setting_id)
+
+    spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if spoiling_setting_form.is_valid():
+
+                if spoiling_setting_form.has_changed():
+                    spoiling_setting_form.save()
+                    messages.success(request, _("Spoiling Setting updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("spoiling_setting_view", args=(spoiling_setting.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    
+    context = {
+        "spoiling_setting": spoiling_setting,
+        "spoiling_setting_form": spoiling_setting_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD MRI_SPOILING_SETTING
 
 @login_required
 @permission_required("experiment.change_experiment")
