@@ -70,6 +70,18 @@
         <div class="col-md-10">
             <div class="container span6 offset3 well">
 
+                <h4>{% trans "Sequence MRI Machine" %}</h4>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Station Name" %} </label>
+                            {{ mrimachine_form.station_name}}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <h4>{% trans "Sequence Specification settings" %}</h4>
 
                 <div class="row">

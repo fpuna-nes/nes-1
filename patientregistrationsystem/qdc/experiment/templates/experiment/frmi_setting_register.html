@@ -177,8 +177,8 @@
                                         </a>
 
                                     {% else %}
-                                        {% if can_change %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                        {% if mri_machine_list and can_change %}
+                                            <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{mri_setting.id}}/mri_machine/{{mri_machine_list.id}}/sequencespecific/new"> {% trans "+ Add setting" %}</a>
                                         {% endif %}
                                     {% endif %}
                                 </td>

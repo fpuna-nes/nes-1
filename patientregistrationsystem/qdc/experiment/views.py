@@ -17772,10 +17772,11 @@ def frmi_setting_update(
 #CRUD SequenceSpecific
 @login_required
 @permission_required("experiment.change_experiment")
-def mri_setting_sequencespecific(
+def mri_setting_sequencespecific_create(
     request,
     mri_setting_id,
-    template_name="experiment/mri_setting_sequencespecific.html",
+    frmi_machine_id,
+    template_name="experiment/fmri_setting_sequencespecific.html",
 ):
 
     mri_setting = get_object_or_404(
@@ -17788,91 +17789,37 @@ def mri_setting_sequencespecific(
 
     creating = True
 
+    mri_machine_list = FMRIMachineSettings.objects.filter(frmi_setting=mri_setting_id).first()
+
     list_of_pulsesequence = PulseSequence.objects.all().distinct()
     sequencespecific_form = SequenceSpecificForm(request.POST or None)
 
-    # if hasattr(emg_electrode_setting, "emg_amplifier_setting"):
+    mrimachine_form = FMRIMachineSettingsForm(request.POST or None, instance=mri_machine_list)
 
-    #     emg_amplifier_setting = EMGAmplifierSetting.objects.get(
-    #         emg_electrode_setting=emg_electrode_setting
-    #     )
+    for field in mrimachine_form.fields:
+        mrimachine_form.fields[field].widget.attrs["disabled"] = True
 
-    #     emg_amplifier_setting_form = EMGAmplifierSettingForm(
-    #         request.POST or None, instance=emg_amplifier_setting
-    #     )
+    if request.method == "POST":
 
-    #     equipment_selected = emg_amplifier_setting.amplifier
+        if request.POST["action"] == "save":
+                # frmi_machine_added.mri_machine = request.POST["software_version"]
+            if sequencespecific_form.is_valid():
 
-    #     equipment_form = EquipmentForm(
-    #         request.POST or None, instance=equipment_selected
-    #     )
+                sequencespecific_added = sequencespecific_form.save(commit=False)
+                
+                sequencespecific_added.save()
 
-    #     if hasattr(emg_amplifier_setting, "emg_analog_filter_setting"):
+                messages.success(request, _("Sequence Specific created successfully."))
+                redirect_url = reverse(
+                    "mri_setting_sequencespecific_create", args=(mri_setting_id,frmi_machine_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
 
-    #         emg_analog_filter_setting = EMGAnalogFilterSetting.objects.get(
-    #             emg_electrode_setting=emg_amplifier_setting
-    #         )
+            else:
+                messages.warning(request, _("Information not saved."))
 
-    #         emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(
-    #             request.POST or None, instance=emg_analog_filter_setting
-    #         )
-
-    #     else:
-    #         emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(
-    #             request.POST or None
-    #         )
-
-    #     for field in emg_amplifier_setting_form.fields:
-    #         emg_amplifier_setting_form.fields[field].widget.attrs["disabled"] = True
-
-    #     for field in emg_analog_filter_setting_form.fields:
-    #         emg_analog_filter_setting_form.fields[field].widget.attrs["disabled"] = True
-
-    # else:
-    #     creating = True
-    #     emg_amplifier_setting_form = EMGAmplifierSettingForm(request.POST or None)
-    #     emg_analog_filter_setting_form = EMGAnalogFilterSettingForm(
-    #         request.POST or None
-    #     )
-    #     equipment_form = EquipmentForm(request.POST or None)
-
-    # if request.method == "POST":
-    #     if request.POST["action"] == "save":
-
-    #         if (
-    #             emg_amplifier_setting_form.is_valid()
-    #             and emg_analog_filter_setting_form.is_valid()
-    #         ):
-
-    #             changed = False
-
-    #             if (
-    #                 emg_amplifier_setting_form.has_changed()
-    #                 or emg_analog_filter_setting_form.has_changed()
-    #             ):
-
-    #                 new_setting = emg_amplifier_setting_form.save(commit=False)
-    #                 new_setting.emg_electrode_setting = emg_electrode_setting
-    #                 new_setting.save()
-
-    #                 new_setting = emg_analog_filter_setting_form.save(commit=False)
-    #                 new_setting.emg_electrode_setting = (
-    #                     emg_electrode_setting.emg_amplifier_setting
-    #                 )
-    #                 new_setting.save()
-    #                 changed = True
-
-    #             if changed:
-    #                 messages.success(
-    #                     request, _("EMG amplifier setting created successfully.")
-    #                 )
-    #             else:
-    #                 messages.success(request, _("There is no changes to save."))
-
-    #             redirect_url = reverse(
-    #                 "emg_electrode_setting_view", args=(emg_electrode_setting_id,)
-    #             )
-    #             return HttpResponseRedirect(redirect_url)
+        else:
+            messages.warning(request, _("Action not available."))
 
     context = {
         "creating": creating,
@@ -17881,6 +17828,7 @@ def mri_setting_sequencespecific(
         "list_pulsesequence":list_of_pulsesequence,
         "mri_setting":mri_setting,
         "sequencespecific_form": sequencespecific_form,
+        "mrimachine_form":mrimachine_form,
         # "emg_electrode_setting": emg_electrode_setting,
         # "emg_amplifier_setting_form": emg_amplifier_setting_form,
         # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
