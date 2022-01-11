@@ -1920,7 +1920,7 @@ class InPlaneSpatialEncoding(SequenceSpecific):
     mixing_time = models.IntegerField()
 
 
-class SpoilingSetting(SequenceSpecific):
+class SpoilingSetting(models.Model):
     type = models.ForeignKey(SpoilingType)
     rf_phase_increment = models.IntegerField()
     gradent_moment = models.IntegerField()
