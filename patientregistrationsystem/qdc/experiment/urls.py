@@ -983,12 +983,12 @@ urlpatterns = [
         name="frmi_setting_new",
     ),
     url(
-        r"^frmi_setting/(?P<frmi_setting_id>\d+)/$",
+        r"^mri_setting/(?P<frmi_setting_id>\d+)/$",
         views.frmi_setting_view,
         name="frmi_setting_view",
     ),
     url(
-        r"^frmi_setting/edit/(?P<frmi_setting_id>\d+)/$",
+        r"^mri_setting/edit/(?P<frmi_setting_id>\d+)/$",
         views.frmi_setting_update,
         name="frmi_setting_edit",
     ),
@@ -1021,6 +1021,106 @@ urlpatterns = [
         views.pulsesequence_update,
         name="pulsesequence_setting_edit",
     ),
+    # register PulseShape device
+    url(
+        r"^pulseshapedevice/list/$",
+        views.pulseshape_list,
+        name="pulseshape_list",
+    ),
+    url(r"^pulseshape/new/$", views.pulseshape_create, name="pulseshape_new"),
+    url(
+        r"^pulseshape/(?P<pulseshape_id>\d+)/$",
+        views.pulseshape_setting_view,
+        name="pulseshape_setting_view",
+    ),
+    url(
+        r"^pulseshape/edit/(?P<pulseshape_id>\d+)/$",
+        views.pulseshape_update,
+        name="pulseshape_setting_edit",
+    ),
+    # register SpoilingType device
+    url(
+        r"^spoilingtypedevice/list/$",
+        views.spoilingtype_list,
+        name="spoilingtype_list",
+    ),
+    url(r"^spoilingtype/new/$", views.spoilingtype_create, name="spoilingtype_new"),
+    url(
+        r"^spoilingtype/(?P<spoilingtype_id>\d+)/$",
+        views.spoilingtype_setting_view,
+        name="spoilingtype_setting_view",
+    ),
+    url(
+        r"^spoilingtype/edit/(?P<spoilingtype_id>\d+)/$",
+        views.spoilingtype_update,
+        name="spoilingtype_setting_edit",
+
+    ),
+    # register parallel imaging device
+    url(
+        r"^parallelimagingdevice/list/$",
+        views.parallelimaging_list,
+        name="parallelimaging_list",
+    ),
+    url(r"^parallelimaging/new/$", 
+        views.parallelimaging_create,
+        name="parallelimaging_new"),
+    url(
+        r"^parallelimaging/(?P<parallelimaging_id>\d+)/$",
+        views.parallelimaging_setting_view,
+        name="parallelimaging_setting_view",
+    ),
+    url(
+        r"^parallelimaging/edit/(?P<parallelimaging_id>\d+)/$",
+        views.parallelimaging_update,
+        name="parallelimaging_setting_edit",
+    ),
+
+
+    # ADD MRI SPOILING SETTING
+    url(
+        r"^mriscannersetting/machinesetting/list/$",
+        views.spoiling_setting_list,
+        name="spoiling_setting_list",
+    ),
+    url(
+        r"^mriscannersetting/machinesetting/new/$",
+        views.spoiling_setting_create,
+        name="spoiling_setting_new",
+    ),
+    url(
+        r"^mriscannersetting/machinesetting/(?P<spoiling_setting_id>\d+)/$",
+        views.spoiling_setting_view,
+        name="spoiling_setting_view",
+    ),
+    url(
+        r"^mriscannersetting/machinesetting/edit/(?P<spoiling_setting_id>\d+)/$",
+        views.spoiling_setting_update,
+        name="spoiling_setting_edit",
+    ),
+
+
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)/sequencespecific/new$",
+        views.mri_setting_sequencespecific_create,
+        name="mri_setting_sequencespecific_create",
+    ),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/new$",
+        views.mri_machine_create,
+        name="mri_machine_create",
+    ),
+        url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)$",
+        views.frmi_machine_view,
+        name="frmi_machine_view",
+    ),
+         url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)/edit$",
+        views.frmi_machine_update,
+        name="frmi_machine_update",
+    ),   
+
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
     #    views.questionnaire_view,

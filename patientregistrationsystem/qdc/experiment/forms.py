@@ -2672,10 +2672,10 @@ class SpoilingSettingForm(ModelForm):
             ),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(SpoilingSettingForm, self).__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs):
+    #     super(SpoilingSettingForm, self).__init__(*args, **kwargs)
 
-        self.fields["type"].queryset = SpoilingType.objects.filter()
+    #     self.fields["type"].queryset = SpoilingType.objects.filter()
 
 
 class FMRIMachineSettingsForm(ModelForm):
@@ -2965,11 +2965,10 @@ class SequenceSpecificForm(ModelForm):
             ),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(FMRIMachineSettingsForm, self).__init__(*args, **kwargs)
-
-        self.fields["pulse_sequence_type"].queryset = PulseSequence.objects.filter()
-        self.fields["mt_pulse_shape"].queryset = PulseShape.objects.filter()
+    # def __init__(self, *args, **kwargs):
+    #     super(FMRIMachineSettingsForm, self).__init__(*args, **kwargs)
+    #     self.fields["pulse_sequence_type"].queryset = PulseSequence.objects.filter()
+    #     self.fields["mt_pulse_shape"].queryset = PulseShape.objects.filter()
 
 
 # Dummy class until final version is defined

@@ -50,14 +50,14 @@
                     <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
 
                     {% if creating %}
-                    <li class="active">{% trans "New FRMI setting" %}</li>
+                    <li class="active">{% trans "New MRI setting" %}</li>
                     {% else %}
                     {% if editing %}
-                    <li><a href="/experiment/frmi_setting/{{ frmi_setting.id }}">{{ frmi_setting_form.name.value }}</a>
+                    <li><a href="/experiment/mri_setting/{{ mri_setting.id }}">{{ mri_setting_form.name.value }}</a>
                     </li>
                     <li class="active">{% trans "Editing" %}</li>
                     {% else %}
-                    <li class="active"> {{ frmi_setting_form.name.value }} </li>
+                    <li class="active"> {{ mri_setting_form.name.value }} </li>
                     {% endif %}
                     {% endif %}
                 </ol>
@@ -71,7 +71,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <label class="control-label">{% trans "Name" %} <b style="color: red;">*</b></label>{{ frmi_setting_form.name }}
+                                <label class="control-label">{% trans "Name" %} <b style="color: red;">*</b></label>{{ mri_setting_form.name }}
                                 <div class="help-block with-errors"></div>
                             </div>
                         </div>
@@ -79,9 +79,8 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <label class="control-label">{% trans "Description" %} <b
-                                        style="color: red;">*</b></label>
-                                {{ frmi_setting_form.description }}
+                                <label class="control-label">{% trans "Description" %} <b style="color: red;">*</b></label>
+                                {{ mri_setting_form.description }}
                                 <div class="help-block with-errors"></div>
                             </div>
                         </div>
@@ -93,12 +92,12 @@
                                 <label class="control-label">{% trans "Archivo" %}</label>
                                 <br />
                                 {% if editing %}
-                                {{ frmi_setting_form.archivo }}
+                                {{ mri_setting_form.archivo }}
                                 {% else %}
-                                {% if frmi_setting_form.archivo.value %}
-                                {{ frmi_setting_form.archivo.value }}
+                                {% if mri_setting_form.archivo.value %}
+                                {{ mri_setting_form.archivo.value }}
                                 <button class="btn btn-default" type="button"
-                                    onclick="location.href='{{ frmi_setting.archivo.url }}'"><span
+                                    onclick="location.href='{{ mri_setting.archivo.url }}'"><span
                                         class="glyphicon glyphicon-download-alt"
                                         style="color: royalblue"></span></button>
                                 {% else %}
@@ -106,7 +105,7 @@
                                 {% endif %}
                                 {% endif %}
                                 <div class="help-block with-errors">
-                                    {% for error in frmi_setting_form.archivo.errors %}
+                                    {% for error in mri_setting_form.archivo.errors %}
                                     {{ error }}
                                     {% endfor %}
                                 </div>
@@ -116,7 +115,7 @@
 
                     {% if not editing and can_change %}
                     <div class="btn-group pull-left">
-                        <a href="/experiment/frmi_setting/edit/{{ frmi_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                        <a href="/experiment/mri_setting/edit/{{ mri_setting.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                     {% endif %}
                 </div>
@@ -135,162 +134,234 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>{% trans "Sequence Specifics" %}</td>
-                                    <td>
-                                        {% if frmi_setting.frmi_seqspecifics_setting %}
-
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/frmi_setting/{{ frmi_setting.id }}/seqspecifics">{{ frmi_setting.pulse_sequence_type.identification }}
+                            <tr>
+                                <td>{% trans "MRI Machine" %}</td>
+                                <td>
+                                    {% if mri_machine_list %}
+                                        {% for mri_machine in mri_machine_list %}  
+                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/mri_machine/{{ mri_machine.id }}">
+                                            {{ mri_machine.station_name }}
                                         </a>
-                                        <!-- <blockquote>
-                                            <i>
-                                                <h6>
-                                                    {% trans "Gain" %}: {{
-                                                    frmi_setting.frmi_amplifier_setting.gain|default:'' }}
-                                                    <br />
-                                                    {% trans "Sampling rate" %}: {{
-                                                    frmi_setting.frmi_amplifier_setting.sampling_rate|default:'' }}
-                                                </h6>
-                                            </i>
-                                        </blockquote> -->
-
-                                        {% else %}
+                                        <br>
+                                        {% endfor %}
+                                    {% else %}
                                         {% if can_change %}
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/frmi_setting/{{ frmi_setting.id }}/seqspecifics"> {% trans "Add setting" %}</a>
+                                            <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/mri_machine/new"> {% trans "+ Add setting" %}</a>
                                         {% endif %}
-                                        {% endif %}
-                                    </td>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if eeg_setting.eeg_solution_setting and can_change %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                           onclick="show_modal_remove_equipment('eeg_solution');"></a>
+                                    {% endif %}
+                                </td>
+                            
                                     <td>
-                                        {% if frmi_setting.frmi_amplifier_setting and can_change %}
+                                        {% if mri_setting.frmi_amplifier_setting and can_change %}
                                         <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
                                             data-placement="right" title="{% trans " Delete setting from list" %}"
                                             style="color: indianred; vertical-align: -5%; padding-left: 0;"
                                             onclick="show_modal_remove_equipment('frmi_amplifier');"></a>
                                         {% endif %}
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>{% trans "Solution" %}</td>
-                                    <td>
-                                        {% if frmi_setting.frmi_solution_setting %}
+                            </tr>
 
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/frmi_setting/{{ frmi_setting.id }}/frmi_solution">{{ frmi_setting.frmi_solution_setting.frmi_solution.name }}
+                            <tr>
+                                <td>{% trans "Sequence Specifics" %}</td>
+                                <td>
+                                    {% if mri_setting.eeg_solution_setting %}
+
+                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
+                                            {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
                                         </a>
 
-                                        {% else %}
-                                        {% if can_change %}
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/frmi_setting/{{ frmi_setting.id }}/frmi_solution"> {% trans "Add setting" %}</a>
+                                    {% else %}
+                                        {% if mri_machine_list and can_change %}
+                                            <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{mri_setting.id}}/mri_machine/{{mri_machine_list.id}}/sequencespecific/new"> {% trans "+ Add setting" %}</a>
                                         {% endif %}
-                                        {% endif %}
-                                    </td>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if eeg_setting.eeg_solution_setting and can_change %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                           onclick="show_modal_remove_equipment('eeg_solution');"></a>
+                                    {% endif %}
+                                </td>
+                            
                                     <td>
-                                        {% if frmi_setting.frmi_solution_setting and can_change %}
+                                        {% if mri_setting.frmi_amplifier_setting and can_change %}
                                         <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
                                             data-placement="right" title="{% trans " Delete setting from list" %}"
                                             style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                            onclick="show_modal_remove_equipment('frmi_solution');"></a>
+                                            onclick="show_modal_remove_equipment('frmi_amplifier');"></a>
                                         {% endif %}
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>{% trans "Filter" %}</td>
-                                    <td>
-                                        {% if frmi_setting.frmi_filter_setting %}
+                            </tr>
 
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/frmi_setting/{{ frmi_setting.id }}/filter">{{ frmi_setting.frmi_filter_setting.frmi_filter_type.name }}
+                            <tr>
+                                <td>{% trans "Spoiling Details" %}</td>
+                                <td>
+                                    {% if mri_setting.eeg_solution_setting %}
+
+                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
+                                            {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
                                         </a>
-                                        <blockquote>
-                                            <i>
-                                                <h6>
-                                                    {% trans "High pass (Hz)" %}: {{
-                                                    frmi_setting.frmi_filter_setting.high_pass|default:'' }}
-                                                    <br />
-                                                    {% trans "Low pass (Hz)" %}: {{
-                                                    frmi_setting.frmi_filter_setting.low_pass|default:'' }}
-                                                    <br />
-                                                    {% trans "Band pass range (Hz)" %}: {{
-                                                    frmi_setting.frmi_filter_setting.low_band_pass|default:'' }} - {{
-                                                    frmi_setting.frmi_filter_setting.high_band_pass|default:'' }}
-                                                    <br />
-                                                    {% trans "Notch range (Hz)" %}: {{
-                                                    frmi_setting.frmi_filter_setting.low_notch|default:'' }} - {{
-                                                    frmi_setting.frmi_filter_setting.high_notch|default:'' }}
-                                                    <br />
-                                                    {% trans "Order" %}: {{
-                                                    frmi_setting.frmi_filter_setting.order|default:'' }}
-                                                </h6>
-                                            </i>
-                                        </blockquote>
 
-                                        {% else %}
+                                    {% else %}
                                         {% if can_change %}
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/frmi_setting/{{ frmi_setting.id }}/filter"> {% trans "Add setting" %}</a>
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
                                         {% endif %}
-                                        {% endif %}
-                                    </td>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if eeg_setting.eeg_solution_setting and can_change %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                           onclick="show_modal_remove_equipment('eeg_solution');"></a>
+                                    {% endif %}
+                                </td>
+                            
                                     <td>
-                                        {% if frmi_setting.frmi_filter_setting and can_change %}
+                                        {% if mri_setting.frmi_amplifier_setting and can_change %}
                                         <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
                                             data-placement="right" title="{% trans " Delete setting from list" %}"
                                             style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                            onclick="show_modal_remove_equipment('frmi_filter');"></a>
+                                            onclick="show_modal_remove_equipment('frmi_amplifier');"></a>
                                         {% endif %}
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td>{% trans "frmi electrode layout" %}</td>
-                                    <td>
-                                        {% if frmi_setting.frmi_electrode_layout_setting %}
+                            </tr>
+                            
+                            <tr>
+                                <td>{% trans "Timing Parameters" %}</td>
+                                <td>
+                                    {% if mri_setting.eeg_solution_setting %}
 
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/frmi_setting/{{ frmi_setting.id }}/frmi_electrode_net_system">
-                                            {{
-                                            frmi_setting.frmi_electrode_layout_setting.frmi_electrode_net_system.frmi_electrode_net.identification
-                                            }}
-                                        </a>
-                                        <br />
-                                        {% if frmi_setting.frmi_electrode_layout_setting.frmi_electrode_net_system.frmi_electrode_net.material %}
-                                        <blockquote>
-                                            <i>
-                                                <h6>
-                                                    {% trans "Material:" %} {{
-                                                    frmi_setting.frmi_electrode_layout_setting.frmi_electrode_net_system.material
-                                                    }}
-                                                </h6>
-                                            </i>
-                                        </blockquote>
-                                        {% endif %}
-
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/frmi_setting/{{ frmi_setting.id }}/frmi_electrode_net_system">
-                                            {{
-                                            frmi_setting.frmi_electrode_layout_setting.frmi_electrode_net_system.frmi_electrode_localization_system.name
-                                            }}
+                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
+                                            {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
                                         </a>
 
-                                        {% else %}
+                                    {% else %}
                                         {% if can_change %}
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/frmi_setting/{{ frmi_setting.id }}/frmi_electrode_net_system">
-                                            {% trans "+ Add setting" %}</a>
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
                                         {% endif %}
-                                        {% endif %}
-                                    </td>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if eeg_setting.eeg_solution_setting and can_change %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                           onclick="show_modal_remove_equipment('eeg_solution');"></a>
+                                    {% endif %}
+                                </td>
+                            
                                     <td>
-                                        {% if frmi_setting.frmi_electrode_layout_setting and can_change %}
+                                        {% if mri_setting.frmi_amplifier_setting and can_change %}
                                         <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
                                             data-placement="right" title="{% trans " Delete setting from list" %}"
                                             style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                            onclick="show_modal_remove_equipment('frmi_electrode_net_system');"></a>
+                                            onclick="show_modal_remove_equipment('frmi_amplifier');"></a>
                                         {% endif %}
                                     </td>
-                                </tr>
+                            </tr>
+
+                            <tr>
+                                <td>{% trans "RF Contrast" %}</td>
+                                <td>
+                                    {% if mri_setting.eeg_solution_setting %}
+
+                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
+                                            {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
+                                        </a>
+
+                                    {% else %}
+                                        {% if can_change %}
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if eeg_setting.eeg_solution_setting and can_change %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                           onclick="show_modal_remove_equipment('eeg_solution');"></a>
+                                    {% endif %}
+                                </td>
+                            
+                                    <td>
+                                        {% if mri_setting.frmi_amplifier_setting and can_change %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                            data-placement="right" title="{% trans " Delete setting from list" %}"
+                                            style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                            onclick="show_modal_remove_equipment('frmi_amplifier');"></a>
+                                        {% endif %}
+                                    </td>
+                            </tr>
+
+                            <tr>
+                                <td>{% trans "Slice Acceleration" %}</td>
+                                <td>
+                                    {% if mri_setting.eeg_solution_setting %}
+
+                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
+                                            {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
+                                        </a>
+
+                                    {% else %}
+                                        {% if can_change %}
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if eeg_setting.eeg_solution_setting and can_change %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                           onclick="show_modal_remove_equipment('eeg_solution');"></a>
+                                    {% endif %}
+                                </td>
+                            
+                                    <td>
+                                        {% if mri_setting.frmi_amplifier_setting and can_change %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                            data-placement="right" title="{% trans " Delete setting from list" %}"
+                                            style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                            onclick="show_modal_remove_equipment('frmi_amplifier');"></a>
+                                        {% endif %}
+                                    </td>
+                            </tr>
+
+                            <tr>
+                                <td>{% trans "In-Plane Spatial Encoding" %}</td>
+                                <td>
+                                    {% if mri_setting.eeg_solution_setting %}
+
+                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
+                                            {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
+                                        </a>
+
+                                    {% else %}
+                                        {% if can_change %}
+                                            <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if eeg_setting.eeg_solution_setting and can_change %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                           onclick="show_modal_remove_equipment('eeg_solution');"></a>
+                                    {% endif %}
+                                </td>
+                            
+                                    <td>
+                                        {% if mri_setting.frmi_amplifier_setting and can_change %}
+                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
+                                            data-placement="right" title="{% trans " Delete setting from list" %}"
+                                            style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                            onclick="show_modal_remove_equipment('frmi_amplifier');"></a>
+                                        {% endif %}
+                                    </td>
+                            </tr>                            
+
+                           
+
+
 
                             </tbody>
                         </table>
@@ -308,11 +379,10 @@
                     </div>
                     {% if editing %}
                     <div class="btn-group pull-right">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save"
-                            %}</button>
+                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
                     </div>
                     <div class="btn-group pull-right">
-                        <a href="/experiment/{% if creating %}{{ experiment.id }}{% else %}frmi_setting/{{ frmi_setting.id }}{% endif %}"
+                        <a href="/experiment/{% if creating %}{{ experiment.id }}{% else %}mri_setting/{{ mri_setting.id }}{% endif %}"
                             class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
                     {% else %}
@@ -365,5 +435,5 @@
 {% endblock %}
 
 {% block script %}
-<script src="{% static 'quiz/js/frmi_setting_register.js' %}"></script>
+<script src="{% static 'quiz/js/mri_setting_register.js' %}"></script>
 {% endblock %}

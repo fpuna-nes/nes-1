@@ -52,6 +52,7 @@ from survey.survey_utils import QuestionnaireUtils, find_questionnaire_name
 from .models import (
     Experiment,
     ExperimentResearcher,
+    PulseShape,
     Subject,
     QuestionnaireResponse,
     SubjectOfGroup,
@@ -146,6 +147,11 @@ from .models import (
     DataFile,
     MRIScanner,
     PulseSequence,
+    PulseShape,
+    SpoilingType,
+    ParallelImaging,
+    SpoilingSetting,
+    FMRIMachineSettings,
 )
 
 from .forms import (
@@ -226,6 +232,12 @@ from .forms import (
     FRMISettingForm,
     MRIScannerForm,
     PulseSequenceForm,
+    PulseShapeForm,
+    SpoilingTypeForm,
+    ParallelImagingForm,
+    SpoilingSettingForm,
+    SequenceSpecificForm,
+    FMRIMachineSettingsForm,
 )
 
 from .portal import (
@@ -16636,6 +16648,404 @@ def pulsesequence_update(
     return render(request, template_name, context)
 # end CRUD PulseSequence 
 
+# CRUD PulseShape
+@login_required
+@permission_required("experiment.register_equipment")
+def pulseshape_list(request, template_name="experiment/pulseshape_list.html"):
+    return render(request, template_name, {"equipments": PulseShape.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def pulseshape_create(request, template_name="experiment/pulseshape_register.html"):
+   
+
+    pulseshape_form = PulseShapeForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if pulseshape_form.is_valid():
+                pulseshape_added = pulseshape_form.save(commit=False)
+                pulseshape_added.save()
+
+                messages.success(request, _("PulseShape included successfully."))
+
+                redirect_url = reverse(
+                    "pulseshape_setting_view", args=(pulseshape_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "pulseshape_setting_form": pulseshape_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def pulseshape_setting_view(
+    request, pulseshape_id, template_name="experiment/pulseshape_register.html"
+):
+
+    pulseshape_setting = get_object_or_404(PulseShape, pk=pulseshape_id)
+    pulseshape_setting_form = PulseShapeForm(request.POST or None, instance=pulseshape_setting)
+
+    for field in pulseshape_setting_form.fields:
+        pulseshape_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+
+            pulseshape_setting.delete()
+
+            messages.success(request, _("Pulse Shape setting was removed successfully."))
+
+            redirect_url = reverse("pulseshape_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "pulseshape_setting_form": pulseshape_setting_form,
+        "pulseshape": pulseshape_setting,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.register_equipment")
+def pulseshape_update(
+    request, pulseshape_id, template_name="experiment/pulseshape_register.html"
+):
+    pulseshape = get_object_or_404(PulseShape, pk=pulseshape_id)
+
+    pulseshape_form = PulseShapeForm(request.POST or None, instance=pulseshape)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if pulseshape_form.is_valid():
+
+                if pulseshape_form.has_changed():
+                    pulseshape_form.save()
+                    messages.success(request, _("Pulse Shape updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("pulseshape_setting_view", args=(pulseshape.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    
+    context = {
+        "pulsesehape_setting": pulseshape,
+        "pulseshape_setting_form": pulseshape_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD PulseShape
+
+
+# CRUD SpoilingType
+@login_required
+@permission_required("experiment.register_equipment")
+def spoilingtype_list(request, template_name="experiment/spoilingtype_list.html"):
+    return render(request, template_name, {"equipments": SpoilingType.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def spoilingtype_create(request, template_name="experiment/spoilingtype_register.html"):
+
+    spoilingtype_form = SpoilingTypeForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if spoilingtype_form.is_valid():
+                spoilingtype_added = spoilingtype_form.save(commit=False)
+                spoilingtype_added.save()
+
+                messages.success(request, _("Spoiling Type included successfully."))
+
+                redirect_url = reverse(
+                    "spoilingtype_setting_view", args=(spoilingtype_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "spoilingtype_setting_form": spoilingtype_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def spoilingtype_setting_view(
+    request, spoilingtype_id, template_name="experiment/spoilingtype_register.html"
+):
+
+    spoilingtype_setting = get_object_or_404(SpoilingType, pk=spoilingtype_id)
+    spoilingtype_setting_form = SpoilingTypeForm(request.POST or None, instance=spoilingtype_setting)
+
+    for field in spoilingtype_setting_form.fields:
+        spoilingtype_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+
+            spoilingtype_setting.delete()
+
+            messages.success(request, _("Spoiling Type setting was removed successfully."))
+
+            redirect_url = reverse("spoilingtype_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "spoilingtype_setting_form": spoilingtype_setting_form,
+        "spoilingtype": spoilingtype_setting,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.register_equipment")
+def spoilingtype_update(
+    request, spoilingtype_id, template_name="experiment/spoilingtype_register.html"
+):
+    spoilingtype = get_object_or_404(SpoilingType, pk=spoilingtype_id)
+
+    spoilingtype_form = SpoilingTypeForm(request.POST or None, instance=spoilingtype)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if spoilingtype_form.is_valid():
+
+                if spoilingtype_form.has_changed():
+                    spoilingtype_form.save()
+                    messages.success(request, _("Spoiling Type updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("spoilingtype_setting_view", args=(spoilingtype.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    
+    context = {
+        "spoilingtype_setting": spoilingtype,
+        "spoilingtype_setting_form": spoilingtype_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD SpoilingType
+
+
+# CRUD ParallelImaging
+@login_required
+@permission_required("experiment.register_equipment")
+def parallelimaging_list(request, template_name="experiment/parallelimaging_list.html"):
+    return render(request, template_name, {"equipments": ParallelImaging.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def parallelimaging_create(request, template_name="experiment/parallelimaging_register.html"):
+   
+
+    parallelimaging_form = ParallelImagingForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if parallelimaging_form.is_valid():
+                parallelimaging_added = parallelimaging_form.save(commit=False)
+                parallelimaging_added.save()
+
+                messages.success(request, _("Parallel Imaging included successfully."))
+
+                redirect_url = reverse(
+                    "parallelimaging_setting_view", args=(parallelimaging_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "parallelimaging_setting_form": parallelimaging_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def parallelimaging_setting_view(
+    request, parallelimaging_id, template_name="experiment/parallelimaging_register.html"
+):
+
+    parallelimaging_setting = get_object_or_404(ParallelImaging, pk=parallelimaging_id)
+    parallelimaging_setting_form = ParallelImagingForm(request.POST or None, instance=parallelimaging_setting)
+
+    for field in parallelimaging_setting_form.fields:
+        parallelimaging_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+
+            parallelimaging_setting.delete()
+
+            messages.success(request, _("Parallel Imaging setting was removed successfully."))
+
+            redirect_url = reverse("parallelimaging_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "parallelimaging_setting_form": parallelimaging_setting_form,
+        "parallelimaging": parallelimaging_setting,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def parallelimaging_update(
+    request, parallelimaging_id, template_name="experiment/parallelimaging_register.html"
+):
+    parallelimaging = get_object_or_404(ParallelImaging, pk=parallelimaging_id)
+
+    parallelimaging_form = ParallelImagingForm(request.POST or None, instance=parallelimaging)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if parallelimaging_form.is_valid():
+
+                if parallelimaging_form.has_changed():
+                    parallelimaging_form.save()
+                    messages.success(request, _("Parallel Imaging updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("parallelimaging_setting_view", args=(parallelimaging.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    
+    context = {
+        "parallelimaging_setting": parallelimaging,
+        "parallelimaging_setting_form": parallelimaging_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD ParallelImaging
+
+# CRUD MRI_SPOILING_SETTING
+@login_required
+@permission_required("experiment.register_equipment")
+def spoiling_setting_list(request, template_name="experiment/mri_spoiling_setting_list.html"):
+    return render(request, template_name, {"equipments": SpoilingSetting.objects.all()})
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def spoiling_setting_create(request, template_name="experiment/mri_spoiling_setting_register.html"):
+   
+    spoiling_setting_list = SpoilingType.objects.all().distinct()
+    spoiling_setting_form = SpoilingSettingForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if spoiling_setting_form.is_valid():
+                spoiling_setting_added = spoiling_setting_form.save(commit=False)
+                spoiling_setting_added.save()
+
+                messages.success(request, _("MRI Spoiling Setting included successfully."))
+
+                redirect_url = reverse(
+                    "spoiling_setting_view", args=(spoiling_setting_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "spoiling_setting_form": spoiling_setting_form,
+        "spoiling_setting_list" : spoiling_setting_list,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def spoiling_setting_view(
+    request, spoiling_setting_id, template_name="experiment/mri_spoiling_setting_register.html"
+):
+    spoiling_type_list = SpoilingType.objects.all().distinct()
+    spoiling_setting_obj = get_object_or_404(SpoilingSetting, pk=spoiling_setting_id)
+    spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting_obj)
+
+    for field in spoiling_setting_form.fields:
+        spoiling_setting_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+
+            spoiling_setting_obj.delete()
+
+            messages.success(request, _("Spoiling setting was removed successfully."))
+
+            redirect_url = reverse("spoiling_setting_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "spoiling_setting_form": spoiling_setting_form,
+        "spoiling_type_list": spoiling_type_list,
+        "spoiling_setting_obj": spoiling_setting_obj,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.register_equipment")
+def spoiling_setting_update(
+    request, spoiling_setting_id, template_name="experiment/mri_spoiling_setting_register.html"
+):
+    spoiling_setting_obj = get_object_or_404(SpoilingSetting, pk=spoiling_setting_id)
+    spoiling_type_list = SpoilingType.objects.all().distinct()
+    
+    spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting_obj)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if spoiling_setting_form.is_valid():
+
+                if spoiling_setting_form.has_changed():
+                    spoiling_setting_form.save()
+                    messages.success(request, _("Spoiling Setting updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("spoiling_setting_view", args=(spoiling_setting_obj.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    
+    context = {
+        "spoiling_setting_form": spoiling_setting_form,
+        "spoiling_type_list": spoiling_type_list,
+        "spoiling_setting_obj": spoiling_setting_obj,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD MRI_SPOILING_SETTING
 
 @login_required
 @permission_required("experiment.change_experiment")
@@ -17185,6 +17595,21 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
             "href": reverse("pulsesequence_list", args=()),
             "quantity": PulseSequence.objects.all().count(),
         },
+        {
+            "item": _("Pulse Shape"),
+            "href": reverse("pulseshape_list", args=()),
+            "quantity": PulseShape.objects.all().count(),
+        },
+        {
+            "item": _("Spoiling Type"),
+            "href": reverse("spoilingtype_list", args=()),
+            "quantity": SpoilingType.objects.all().count(),
+        },
+        {
+            "item": _("Parallel Imaging"),
+            "href": reverse("parallelimaging_list", args=()),
+            "quantity": ParallelImaging.objects.all().count(),
+        },
     ]
 
     context = {
@@ -17204,12 +17629,12 @@ def frmi_setting_create(
 
     check_can_change(request.user, experiment.research_project)
 
-    frmi_setting_form = FRMISettingForm(request.POST or None, request.FILES)
+    mri_setting_form = FRMISettingForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST["action"] == "save":
-            if frmi_setting_form.is_valid():
-                frmi_setting_added = frmi_setting_form.save(commit=False)
+            if mri_setting_form.is_valid():
+                frmi_setting_added = mri_setting_form.save(commit=False)
                 frmi_setting_added.experiment_id = experiment_id
                 frmi_setting_added.save()
                 messages.success(request, _("FRMI setting included successfully."))
@@ -17220,7 +17645,7 @@ def frmi_setting_create(
                 return HttpResponseRedirect(redirect_url)
 
     context = {
-        "frmi_setting_form": frmi_setting_form,
+        "mri_setting_form": mri_setting_form,
         "creating": True,
         "editing": True,
         "experiment": experiment,
@@ -17348,12 +17773,15 @@ def frmi_setting_view(
     request, frmi_setting_id, template_name="experiment/frmi_setting_register.html"
 ):
 
-    frmi_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
-    frmi_setting_form = FRMISettingForm(request.POST or None, instance=frmi_setting)
-    for field in frmi_setting_form.fields:
-        frmi_setting_form.fields[field].widget.attrs["disabled"] = True
+    mri_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
+    mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
+    for field in mri_setting_form.fields:
+        mri_setting_form.fields[field].widget.attrs["disabled"] = True
+    
+    #configuraciones de mri
+    mri_machine_list = FMRIMachineSettings.objects.filter(frmi_setting=frmi_setting_id)
 
-    can_change = get_can_change(request.user, frmi_setting.experiment.research_project)
+    can_change = get_can_change(request.user, mri_setting.experiment.research_project)
 
     if request.method == "POST":
         if can_change:
@@ -17362,9 +17790,9 @@ def frmi_setting_view(
 
                 # TODO: checking if there is some FRMI Step using it
 
-                experiment_id = frmi_setting.experiment_id
+                experiment_id = mri_setting.experiment_id
 
-                frmi_setting.delete()
+                mri_setting.delete()
 
                 messages.success(request, _("FRMI setting was removed successfully."))
 
@@ -17400,14 +17828,15 @@ def frmi_setting_view(
 
                 messages.success(request, _("Setting was removed successfully."))
 
-                redirect_url = reverse("frmi_setting_view", args=(frmi_setting.id,))
+                redirect_url = reverse("frmi_setting_view", args=(mri_setting.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "can_change": can_change,
-        "frmi_setting_form": frmi_setting_form,
-        "experiment": frmi_setting.experiment,
-        "frmi_setting": frmi_setting,
+        "mri_setting_form": mri_setting_form,
+        "experiment": mri_setting.experiment,
+        "mri_setting": mri_setting,
+        "mri_machine_list": mri_machine_list,
         "editing": False,
     }
 
@@ -17419,51 +17848,217 @@ def frmi_setting_view(
 def frmi_setting_update(
     request, frmi_setting_id, template_name="experiment/frmi_setting_register.html"
 ):
-    frmi_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
+    mri_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
 
-    check_can_change(request.user, frmi_setting.experiment.research_project)
+    check_can_change(request.user, mri_setting.experiment.research_project)
 
-    frmi_setting_form = FRMISettingForm(request.POST or None, instance=frmi_setting)
+    mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
 
     if request.method == "POST":
         if request.POST["action"] == "save":
+            if mri_setting_form.is_valid():
+                if mri_setting_form.has_changed():
 
-            if frmi_setting_form.is_valid():
-                # if frmi_setting_form.has_changed():
-                dato_orthanc = request.FILES["archivo"]
-                dato_orthanc = dato_orthanc.read()
-                httpreq = httplib2.Http()
-                httpreq.add_credentials("orthanc", "orthanc")
-                (resp, content) = httpreq.request(
-                    "http://172.18.0.3:8042/instances",
-                    "POST",
-                    body=dato_orthanc,
-                    headers={"content-type": "application/octet-stream"},
-                )
-                logger.debug(resp)
-                respuesta = json.loads(content)
-                logger.debug(respuesta)
-                if (
-                    respuesta["Status"] == "Success"
-                    or respuesta["Status"] == "AlreadyStored"
-                ):
-                    frmi_setting_form.instance.idorthanc = respuesta["ID"]
-                    frmi_setting_form.save()
+                    mri_setting_form.save()
                     messages.success(request, _("Guardado exitosamente."))
                 else:
-                    messages.error(request, _("Error de orthanc"))
+                    messages.error(request, _("Ocurrio un error"))
+        redirect_url = reverse("frmi_setting_view", args=(frmi_setting_id,))
+        return HttpResponseRedirect(redirect_url)
+    context = {
+        "mri_setting_form": mri_setting_form,
+        "editing": True,
+        "experiment": mri_setting.experiment,
+        "mri_setting": mri_setting,
+    }
 
-                redirect_url = reverse("frmi_setting_view", args=(frmi_setting_id,))
+    return render(request, template_name, context)
+
+#CRUD SequenceSpecific
+@login_required
+@permission_required("experiment.change_experiment")
+def mri_setting_sequencespecific_create(
+    request,
+    mri_setting_id,
+    frmi_machine_id,
+    template_name="experiment/fmri_setting_sequencespecific.html",
+):
+
+    mri_setting = get_object_or_404(
+        FRMISetting, pk=mri_setting_id
+    )
+
+    can_change = get_can_change(
+        request.user, mri_setting.experiment.research_project
+    )
+
+    creating = True
+
+    mri_machine_list = FMRIMachineSettings.objects.filter(frmi_setting=mri_setting_id).first()
+
+    list_of_pulsesequence = PulseSequence.objects.all().distinct()
+    sequencespecific_form = SequenceSpecificForm(request.POST or None)
+
+    mrimachine_form = FMRIMachineSettingsForm(request.POST or None, instance=mri_machine_list)
+
+    for field in mrimachine_form.fields:
+        mrimachine_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+
+        if request.POST["action"] == "save":
+                # frmi_machine_added.mri_machine = request.POST["software_version"]
+            if sequencespecific_form.is_valid():
+
+                sequencespecific_added = sequencespecific_form.save(commit=False)
+                
+                sequencespecific_added.save()
+
+                messages.success(request, _("Sequence Specific created successfully."))
+                redirect_url = reverse(
+                    "mri_setting_sequencespecific_create", args=(mri_setting_id,frmi_machine_added.id,)
+                )
                 return HttpResponseRedirect(redirect_url)
+
             else:
-                messages.error(request, _("Ocurrio un error"))
-                logger.debug(frmi_setting_form.errors)
+                messages.warning(request, _("Information not saved."))
+
+        else:
+            messages.warning(request, _("Action not available."))
 
     context = {
-        "frmi_setting_form": frmi_setting_form,
-        "editing": True,
-        "experiment": frmi_setting.experiment,
-        "frmi_setting": frmi_setting,
+        "creating": creating,
+        "editing": False,
+        "can_change": can_change,
+        "list_pulsesequence":list_of_pulsesequence,
+        "mri_setting":mri_setting,
+        "sequencespecific_form": sequencespecific_form,
+        "mrimachine_form":mrimachine_form,
+        # "emg_electrode_setting": emg_electrode_setting,
+        # "emg_amplifier_setting_form": emg_amplifier_setting_form,
+        # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
+        # "equipment_form": equipment_form,
+        # "manufacturer_list": list_of_manufacturers,
     }
+
+    return render(request, template_name, context)
+
+#CRUD MRI Machine
+@login_required
+@permission_required("experiment.register_equipment")
+def mri_machine_create(
+    request, 
+    mri_setting_id,
+    template_name="experiment/frmi_machine_register.html"
+):
+
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    fmri_machine_form = FMRIMachineSettingsForm(request.POST or None)
+
+    list_of_mri_machines = MRIScanner.objects.all().distinct()
+
+    if request.method == "POST":
+
+        if request.POST["action"] == "save":
+                # frmi_machine_added.mri_machine = request.POST["software_version"]
+            if fmri_machine_form.is_valid():
+
+                frmi_machine_added = fmri_machine_form.save(commit=False)
+                frmi_machine_added.frmi_setting=mri_setting
+                frmi_machine_added.save()
+
+                messages.success(request, _("FMRI machine created successfully."))
+                redirect_url = reverse(
+                    "frmi_machine_view", args=(mri_setting_id,frmi_machine_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _("Information not saved."))
+
+        else:
+            messages.warning(request, _("Action not available."))
+
+    context = {"fmri_machine_form": fmri_machine_form, 
+               "mri_setting": mri_setting,
+               "list_of_mri_machines": list_of_mri_machines,
+               "creating": True, 
+               "editing": True}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def frmi_machine_view(
+    request, mri_setting_id, frmi_machine_id, template_name="experiment/frmi_machine_register.html"
+):
+
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    fmri_machine = get_object_or_404(FMRIMachineSettings, pk=frmi_machine_id)
+    fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=fmri_machine)
+    list_of_mri_machines = MRIScanner.objects.all().distinct()
+
+    for field in fmri_machine_form.fields:
+        fmri_machine_form.fields[field].widget.attrs["disabled"] = True
+
+    can_change = get_can_change(request.user, mri_setting.experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST["action"] == "remove":
+                # TODO: checking if there is some FRMI Data using it
+
+                # TODO: checking if there is some FRMI Step using it
+
+                fmri_machine.delete()
+
+                messages.success(request, _("FRMI machine was removed successfully."))
+
+                redirect_url = reverse("frmi_setting_view", args=(mri_setting_id,))
+                return HttpResponseRedirect(redirect_url)
+
+
+    context = {"fmri_machine_form": fmri_machine_form, 
+               "mri_setting": mri_setting,
+               "mri_machine_setting":fmri_machine,
+               "list_of_mri_machines": list_of_mri_machines,
+               "creating": False, 
+               "editing": False,
+               "can_change": can_change,}
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.view_researchproject")
+def frmi_machine_update(
+    request, mri_setting_id, frmi_machine_id, template_name="experiment/frmi_machine_register.html"
+):
+
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    fmri_machine = get_object_or_404(FMRIMachineSettings, pk=frmi_machine_id)
+    fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=fmri_machine)
+    list_of_mri_machines = MRIScanner.objects.all().distinct()
+
+    can_change = get_can_change(request.user, mri_setting.experiment.research_project)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if fmri_machine_form.is_valid():
+                if fmri_machine_form.has_changed():
+                    fmri_machine_form.save()
+                    messages.success(request, _("Guardado exitosamente."))
+                else:
+                    messages.error(request, _("Ocurrio un error"))
+        redirect_url = reverse("frmi_machine_view", args=(mri_setting_id, frmi_machine_id,))
+        return HttpResponseRedirect(redirect_url)
+
+
+    context = {"fmri_machine_form": fmri_machine_form, 
+               "mri_setting": mri_setting,
+               "mri_machine_setting":fmri_machine,
+               "list_of_mri_machines": list_of_mri_machines,
+               "creating": False, 
+               "editing": True,
+               "can_change": can_change,}
 
     return render(request, template_name, context)

@@ -1840,25 +1840,9 @@ class SpoilingType(models.Model):
     description = models.TextField(null=False, blank=False)
 
 
-class PulseShape(models.Model):
-    name = models.CharField(max_length=150)
-    description = models.TextField(null=False, blank=False)
-
-
-class PulseSequence(models.Model):
-    name = models.CharField(max_length=150)
-    description = models.TextField(null=False, blank=False)
-
-
 class ParallelImaging(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(null=False, blank=False)
-
-
-# FRMI Section Added
-class FMRIMachineSettings(models.Model):
-    mri_machine = models.ForeignKey(MRIScanner)
-    station_name = models.CharField(max_length=255)
 
 
 def get_frmi_settings_dir(instance, filename):
@@ -1888,9 +1872,26 @@ class FRMISetting(models.Model):
             self.experiment.save()
 
 
+# FRMI Section Added
+class FMRIMachineSettings(models.Model):
+    mri_machine = models.ForeignKey(MRIScanner)
+    frmi_setting = models.ForeignKey(FRMISetting, null=True, blank=True)
+    station_name = models.CharField(max_length=255)
+
+class PulseShape(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=False, blank=False)
+
+
+class PulseSequence(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(null=False, blank=False)
+
+
 # 1 to 1 Relations from here
 class SequenceSpecific(models.Model):
-    fmri_settings = models.ForeignKey(FRMISetting, null=True, blank=True)
+    # fmri_settings = models.ForeignKey(FRMISetting, null=True, blank=True)
+    fmri_machine_settings = models.ForeignKey(FMRIMachineSettings, null=True, blank=True)
     pulse_sequence_type = models.ForeignKey(PulseSequence, null=True, blank=True)
     mt_pulse_shape = models.ForeignKey(PulseShape, null=True, blank=True)
     scanning_sequence = models.CharField(max_length=255, null=True, blank=True)
@@ -1919,7 +1920,7 @@ class InPlaneSpatialEncoding(SequenceSpecific):
     mixing_time = models.IntegerField()
 
 
-class SpoilingSetting(SequenceSpecific):
+class SpoilingSetting(models.Model):
     type = models.ForeignKey(SpoilingType)
     rf_phase_increment = models.IntegerField()
     gradent_moment = models.IntegerField()
