@@ -17874,7 +17874,6 @@ def frmi_setting_update(
 def mri_setting_sequencespecific_create(
     request,
     mri_setting_id,
-    frmi_machine_id,
     template_name="experiment/fmri_setting_sequencespecific.html",
 ):
 
@@ -17888,7 +17887,7 @@ def mri_setting_sequencespecific_create(
 
     creating = True
 
-    mri_machine_list = FMRIMachineSettings.objects.filter(frmi_setting=mri_setting_id).first()
+    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmrimachinesetting.id)
 
     list_of_pulsesequence = PulseSequence.objects.all().distinct()
     sequencespecific_form = SequenceSpecificForm(request.POST or None)
@@ -17905,12 +17904,12 @@ def mri_setting_sequencespecific_create(
             if sequencespecific_form.is_valid():
 
                 sequencespecific_added = sequencespecific_form.save(commit=False)
-                
+                sequencespecific_added.fmri_settings= mri_setting
                 sequencespecific_added.save()
 
                 messages.success(request, _("Sequence Specific created successfully."))
                 redirect_url = reverse(
-                    "mri_setting_sequencespecific_create", args=(mri_setting_id,frmi_machine_added.id,)
+                    "frmi_setting_view", args=(mri_setting_id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 

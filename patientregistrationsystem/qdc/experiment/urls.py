@@ -1101,7 +1101,7 @@ urlpatterns = [
 
 
     url(
-        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)/sequencespecific/new$",
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/new$",
         views.mri_setting_sequencespecific_create,
         name="mri_setting_sequencespecific_create",
     ),
