@@ -8,9 +8,9 @@
 <div class="row">
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
         {% csrf_token %}
-        {% endblock %}
+{% endblock %}
 
-        {% block content %}
+{% block content %}
 
         {% if messages %}
         {% for message in messages %}
@@ -71,6 +71,14 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
+                                <label class="control-label">{% trans "Machine Settings" %} <b style="color: red;">*</b></label>{{ mri_setting_form.fmri_machine_setting }}
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
                                 <label class="control-label">{% trans "Name" %} <b style="color: red;">*</b></label>{{ mri_setting_form.name }}
                                 <div class="help-block with-errors"></div>
                             </div>
@@ -85,33 +93,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- <div class="row">
-                        <div class="col-xs-12 col-sm-12">
-                            <div class="form-group">
-                                <label class="control-label">{% trans "Archivo" %}</label>
-                                <br />
-                                {% if editing %}
-                                {{ mri_setting_form.archivo }}
-                                {% else %}
-                                {% if mri_setting_form.archivo.value %}
-                                {{ mri_setting_form.archivo.value }}
-                                <button class="btn btn-default" type="button"
-                                    onclick="location.href='{{ mri_setting.archivo.url }}'"><span
-                                        class="glyphicon glyphicon-download-alt"
-                                        style="color: royalblue"></span></button>
-                                {% else %}
-                                {% trans "There is no file associated." %}
-                                {% endif %}
-                                {% endif %}
-                                <div class="help-block with-errors">
-                                    {% for error in mri_setting_form.archivo.errors %}
-                                    {{ error }}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
 
                     {% if not editing and can_change %}
                     <div class="btn-group pull-left">
@@ -427,9 +408,9 @@
             </div>
         </div>
 
-        {% endblock %}
+{% endblock %}
 
-        {% block end_form %}
+{% block end_form %}
     </form>
 </div>
 {% endblock %}

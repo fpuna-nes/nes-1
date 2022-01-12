@@ -1854,12 +1854,16 @@ class FMRIMachineSettings(models.Model):
     mri_machine = models.ForeignKey(MRIScanner)
     station_name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.station_name
+
 
 class FRMISetting(models.Model):
     experiment = models.ForeignKey(Experiment)
     name = models.CharField(max_length=150)
     description = models.TextField()
-    fmrimachinesetting = models.ForeignKey(FMRIMachineSettings)
+    fmri_machine_setting = models.ForeignKey(FMRIMachineSettings, null=True, blank=True)
+
     def __str__(self):
         return self.name
 
