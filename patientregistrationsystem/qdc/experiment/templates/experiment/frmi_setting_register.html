@@ -85,6 +85,32 @@
                             </div>
                         </div>
                     </div>
+                    <h4>{% trans "FRMI Machine" %}</h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Equipment Identification" %} </label>
+                                <select class="form-control" name="mri_machine" id="id_mri_machine" {% if not editing and not creating %}disabled{% endif %}>
+                                    <option value>-------</option>
+                                    {% for mri_scanner in list_of_mri_scanner %}
+                                        <!-- <option {% if manufacturer.id == equipment_selected.manufacturer.id %}selected="selected"{% endif %} value="{{ manufacturer.id }}">{{ manufacturer.name }}</option> -->
+                                        <option {% if mri_scanner.id == mri_scanner_obj.id %}selected="selected"{% endif %} value="{{ mri_scanner.id }}">{{ mri_scanner.manufacturer_model_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="help-block with-errors"></div>
+    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Station Name" %}</label>
+                                {{ fmri_machine_form.station_name }}
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- <div class="row">
                         <div class="col-xs-12 col-sm-12">
@@ -137,13 +163,13 @@
                             <tr>
                                 <td>{% trans "MRI Machine" %}</td>
                                 <td>
-                                    {% if mri_machine_list %}
-                                        {% for mri_machine in mri_machine_list %}  
-                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/mri_machine/{{ mri_machine.id }}">
-                                            {{ mri_machine.station_name }}
+                                    {% if mri_machine_obj %}
+                                          
+                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/mri_machine/{{ mri_machine_obj.id }}">
+                                            {{ mri_machine_obj.station_name }}
                                         </a>
                                         <br>
-                                        {% endfor %}
+                                        
                                     {% else %}
                                         {% if can_change %}
                                             <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/mri_machine/new"> {% trans "+ Add setting" %}</a>
@@ -177,8 +203,8 @@
                                         </a>
 
                                     {% else %}
-                                        {% if mri_machine_list and can_change %}
-                                            <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{mri_setting.id}}/mri_machine/{{mri_machine_list.id}}/sequencespecific/new"> {% trans "+ Add setting" %}</a>
+                                        {% if mri_machine_obj and can_change %}
+                                            <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{mri_setting.id}}/mri_machine/{{mri_machine_obj.id}}/sequencespecific/new"> {% trans "+ Add setting" %}</a>
                                         {% endif %}
                                     {% endif %}
                                 </td>
