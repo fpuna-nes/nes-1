@@ -1849,34 +1849,20 @@ def get_frmi_settings_dir(instance, filename):
     return "frmi_settings/%s/%s" % (instance.id, filename)
 
 
+# FRMI Section Added
+class FMRIMachineSettings(models.Model):
+    mri_machine = models.ForeignKey(MRIScanner)
+    station_name = models.CharField(max_length=255)
+
+
 class FRMISetting(models.Model):
     experiment = models.ForeignKey(Experiment)
     name = models.CharField(max_length=150)
     description = models.TextField()
-    # archivo = models.FileField(upload_to=get_frmi_settings_dir, null=True, blank=True)
-    # consultar a Luis G. sobre la idea de este campo
-    copied_from = models.ForeignKey("self", null=True, related_name="children")
-
+    fmrimachinesetting = models.ForeignKey(FMRIMachineSettings)
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            # saved_file = self.archivo
-            # self.archivo = None
-            # super(FRMISetting, self).save(*args, **kwargs)
-            # self.archivo = saved_file
-            super(FRMISetting, self).save(*args, **kwargs)
-        else:
-            super(FRMISetting, self).save(*args, **kwargs)
-            self.experiment.save()
-
-
-# FRMI Section Added
-class FMRIMachineSettings(models.Model):
-    mri_machine = models.ForeignKey(MRIScanner)
-    frmi_setting = models.ForeignKey(FRMISetting, null=True, blank=True)
-    station_name = models.CharField(max_length=255)
 
 class PulseShape(models.Model):
     name = models.CharField(max_length=150)
@@ -1890,8 +1876,7 @@ class PulseSequence(models.Model):
 
 # 1 to 1 Relations from here
 class SequenceSpecific(models.Model):
-    # fmri_settings = models.ForeignKey(FRMISetting, null=True, blank=True)
-    fmri_machine_settings = models.ForeignKey(FMRIMachineSettings, null=True, blank=True)
+    fmri_settings = models.ForeignKey(FRMISetting, null=True, blank=True)
     pulse_sequence_type = models.ForeignKey(PulseSequence, null=True, blank=True)
     mt_pulse_shape = models.ForeignKey(PulseShape, null=True, blank=True)
     scanning_sequence = models.CharField(max_length=255, null=True, blank=True)
@@ -1902,10 +1887,10 @@ class SequenceSpecific(models.Model):
     non_linear_gradient_collection = models.BooleanField()
     mr_acquisition_type = models.CharField(max_length=255, null=True, blank=True)
     mt_state = models.BooleanField()
-    mt_offset_frequency = models.IntegerField()
-    mt_pulse_bandwith = models.IntegerField()
-    mt_number_of_pulses = models.IntegerField()
-    mt_pulse_duration = models.IntegerField()
+    mt_offset_frequency = models.IntegerField(null=True, blank=True)
+    mt_pulse_bandwith = models.IntegerField(null=True, blank=True)
+    mt_number_of_pulses = models.IntegerField(null=True, blank=True)
+    mt_pulse_duration = models.IntegerField(null=True, blank=True)
 
 
 class InPlaneSpatialEncoding(SequenceSpecific):
@@ -1920,7 +1905,7 @@ class InPlaneSpatialEncoding(SequenceSpecific):
     mixing_time = models.IntegerField()
 
 
-class SpoilingSetting(models.Model):
+class SpoilingSetting(SequenceSpecific):
     type = models.ForeignKey(SpoilingType)
     rf_phase_increment = models.IntegerField()
     gradent_moment = models.IntegerField()
