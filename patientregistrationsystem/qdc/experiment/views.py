@@ -18218,30 +18218,12 @@ def timingparameter_create(request, sequencespecific_id, template_name="experime
                 timingparameter_added = timingparameter_form.save(commit=False)
                 sequence_specific = SequenceSpecific.objects.get(id=sequencespecific_id)
                 timingparameter_added.sequence_specific = sequence_specific
-                # sequence_specific.__class__ = TimingParameters
-                #
-                # sequence_specific.echo_time = timingparameters_added.echo_time
-                # sequence_specific.inversion_time = timingparameters_added.inversion_time
-                # sequence_specific.slice_timing = timingparameters_added.slice_timing
-                # sequence_specific.slice_encoding_direction = timingparameters_added.slice_encoding_direction
-                # sequence_specific.dwell_time = timingparameters_added.dwell_time
-                #
-                # sequence_specific.save(
-                #     update_fields=[
-                #         'id',
-                #         'echo_time',
-                #         'inversion_time',
-                #         'slice_timing',
-                #         'slice_encoding_direction',
-                #         'dwell_time',
-                #     ]
-                # )
                 timingparameter_added.save()
 
                 messages.success(request, _("Timing Parameters included successfully."))
 
                 redirect_url = reverse(
-                    "timingparameters_view", args=(sequence_specific.id,)
+                    "timingparameter_view", args=(sequence_specific.id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 
@@ -18271,7 +18253,7 @@ def timingparameter_view(
 
             messages.success(request, _("Pulse Sequence setting was removed successfully."))
 
-            redirect_url = reverse("timingparameter_list", args=())
+            redirect_url = reverse("timingparameter_view", args=(sequencespecific_id, ))
             return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -18302,7 +18284,7 @@ def timingparameter_update(
                 else:
                     messages.success(request, _("There is no changes to save."))
 
-                redirect_url = reverse("timingparameters_view", args=(sequencespecific_id,))
+                redirect_url = reverse("timingparameter_view", args=(sequencespecific_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
