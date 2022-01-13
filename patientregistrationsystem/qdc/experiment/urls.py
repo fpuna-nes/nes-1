@@ -1010,17 +1010,17 @@ urlpatterns = [
         views.pulsesequence_list,
         name="pulsesequence_list",
     ),
-    url(r"^pulsesequence/new/$", views.pulsesequence_create, name="pulsesequence_new"),
-    url(
-        r"^pulsesequence/(?P<pulsesequence_id>\d+)/$",
-        views.pulsesequence_setting_view,
-        name="pulsesequence_setting_view",
-    ),
-    url(
-        r"^pulsesequence/edit/(?P<pulsesequence_id>\d+)/$",
-        views.pulsesequence_update,
-        name="pulsesequence_setting_edit",
-    ),
+    # url(r"^pulsesequence/new/$", views.pulsesequence_create, name="pulsesequence_new"),
+    # url(
+    #     r"^pulsesequence/(?P<pulsesequence_id>\d+)/$",
+    #     views.pulsesequence_setting_view,
+    #     name="pulsesequence_setting_view",
+    # ),
+    # url(
+    #     r"^pulsesequence/edit/(?P<pulsesequence_id>\d+)/$",
+    #     views.pulsesequence_update,
+    #     name="pulsesequence_setting_edit",
+    # ),
     # register PulseShape device
     url(
         r"^pulseshapedevice/list/$",
@@ -1104,6 +1104,16 @@ urlpatterns = [
         r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/new$",
         views.mri_setting_sequencespecific_create,
         name="mri_setting_sequencespecific_create",
+    ),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)$",
+        views.mri_setting_sequencespecific_view,
+        name="mri_setting_sequencespecific_view",
+    ),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/edit$",
+        views.mri_setting_sequencespecific_update,
+        name="mri_setting_sequencespecific_update",
     ),
     url(
         r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/new$",
