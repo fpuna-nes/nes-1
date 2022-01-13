@@ -152,6 +152,7 @@ from .models import (
     FMRIMachineSettings,
     TimingParameters,
     SequenceSpecific,
+    RFContrast,
 )
 
 from .forms import (
@@ -239,6 +240,7 @@ from .forms import (
     SequenceSpecificForm,
     FMRIMachineSettingsForm,
     TimingParametersForm,
+    RFContrastForm,
 )
 
 from .portal import (
@@ -18295,3 +18297,94 @@ def timingparameter_update(
 
     return render(request, template_name, context)
 # end CRUD TimingParameters
+
+
+# CRUD RF Contrast
+@login_required
+@permission_required("experiment.add_rfcontrast")
+def rfcontrast_create(request, sequencespecific_id, template_name="experiment/rfcontrast_register.html"):
+    rfcontrast_form = RFContrastForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if rfcontrast_form.is_valid():
+                rfcontrast_added = rfcontrast_form.save(commit=False)
+                sequence_specific = SequenceSpecific.objects.get(id=sequencespecific_id)
+                rfcontrast_added.sequence_specific = sequence_specific
+                rfcontrast_added.save()
+
+                messages.success(request, _("RF Contrast included successfully."))
+
+                redirect_url = reverse(
+                    "rfcontrast_view", args=(sequence_specific.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "rfcontrast_form": rfcontrast_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_rfcontrast")
+def rfcontrast_view(
+        request, sequencespecific_id, template_name="experiment/rfcontrast_register.html"
+):
+    rfcontrast_ = get_object_or_404(RFContrast, pk=sequencespecific_id)
+    rfcontrast_form = RFContrastForm(request.POST or None, instance=rfcontrast_)
+
+    for field in rfcontrast_form.fields:
+        rfcontrast_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+            rfcontrast_.delete()
+
+            messages.success(request, _("RF Contrast setting was removed successfully."))
+
+            redirect_url = reverse("rfcontrast_view", args=(sequencespecific_id, ))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "rfcontrast_form": rfcontrast_form,
+        "rfcontrast": rfcontrast_,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_rfcontrast")
+def rfcontrast_update(
+        request, sequencespecific_id, template_name="experiment/rfcontrast_register.html"
+):
+    rfcontrast = get_object_or_404(RFContrast, pk=sequencespecific_id)
+
+    rfcontrast_form = RFContrastForm(request.POST or None, instance=rfcontrast)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if rfcontrast_form.is_valid():
+
+                if rfcontrast_form.has_changed():
+                    rfcontrast_form.save()
+                    messages.success(request, _("RF Contrast updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("rfcontrast_view", args=(sequencespecific_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "rfcontrast": rfcontrast,
+        "rfcontrast_form": rfcontrast_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD RFContrast

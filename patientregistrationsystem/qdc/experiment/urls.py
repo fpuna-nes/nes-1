@@ -1147,6 +1147,21 @@ urlpatterns = [
         name="timingparameter_edit",
     ),
 
+    # register RF Contrast
+    url(r"^sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/new/$",
+        views.rfcontrast_create,
+        name="rfcontrast_new"),
+    url(
+        r"^sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/$",
+        views.rfcontrast_view,
+        name="rfcontrast_view",
+    ),
+    url(
+        r"^sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/edit/$",
+        views.rfcontrast_update,
+        name="rfcontrast_edit",
+    ),
+
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
     #    views.questionnaire_view,
