@@ -49,7 +49,7 @@
                 <li><a href="/experiment/research_project/{{ mri_setting.experiment.id }}">{{ mri_setting.experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ mri_setting.experiment.id }}">{{ mri_setting.experiment.title }}</a></li>
                 <li><a href="/experiment/mri_setting/{{ mri_setting.id }}">{{ mri_setting.name }}</a></li>
-
+        
                 <!-- <li><a href="/experiment/emg_electrode_setting/{{ emg_electrode_setting.id }}">{{ emg_electrode_setting.emg_electrode_placement_setting.emg_electrode_placement }}</a></li> -->
 
                 {% if creating %}
@@ -226,21 +226,7 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td>{% trans "MRI Machine" %}</td>
-                            <td>
-                                {% if mri_machine_obj %}
-                                      
-                                    <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/mri_machine/{{ mri_machine_obj.id }}">
-                                        {{ mri_machine_obj.station_name }}
-                                    </a>
-                                    <br>
-                                    
-                                {% else %}
-                                    {% if can_change %}
-                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/mri_machine/new"> {% trans "+ Add setting" %}</a>
-                                    {% endif %}
-                                {% endif %}
-                            </td>
+
                             <td>
                                 {% if eeg_setting.eeg_solution_setting and can_change %}
                                     <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
@@ -258,50 +244,20 @@
                                 </td>
                         </tr>
 
-                        <tr>
-                            <td>{% trans "Sequence Specifics" %}</td>
-                            <td>
-                                
-                                
-                                {% for seqespecific in list_of_sequencespecific %}
-                                
-                                    <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ seqespecific.id }}">
-                                        {{ seqespecific.sequence_name }}
-                                    </a>
-                                    <br>
-                                {% endfor %}
-                                <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{mri_setting.id}}/sequencespecific/new"> {% trans "+ Add Sequence Specific" %}</a>
-                            
-                            </td>
-                            <td>
-                                {% if eeg_setting.eeg_solution_setting and can_change %}
-                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                       onclick="show_modal_remove_equipment('eeg_solution');"></a>
-                                {% endif %}
-                            </td>
-                        
-                                <td>
-                                    {% if mri_setting.frmi_amplifier_setting and can_change %}
-                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
-                                        data-placement="right" title="{% trans " Delete setting from list" %}"
-                                        style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                        onclick="show_modal_remove_equipment('frmi_amplifier');"></a>
-                                    {% endif %}
-                                </td>
-                        </tr>
 
                         <tr>
                             <td>{% trans "Spoiling Details" %}</td>
                             <td>
-                                {% if mri_setting.eeg_solution_setting %}
+                                {{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}
+                                {% if not sequencespecific_obj %}
 
-                                    <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
+                                    <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/spoilingsetting/new/">
                                         {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
                                     </a>
 
                                 {% else %}
                                     {% if can_change %}
-                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/spoilingsetting/new"> {% trans "+ Add setting" %}</a>
                                     {% endif %}
                                 {% endif %}
                             </td>

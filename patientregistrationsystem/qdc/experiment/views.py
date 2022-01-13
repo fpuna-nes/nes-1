@@ -16954,10 +16954,15 @@ def spoiling_setting_list(request, template_name="experiment/mri_spoiling_settin
 
 @login_required
 @permission_required("experiment.register_equipment")
-def spoiling_setting_create(request, template_name="experiment/mri_spoiling_setting_register.html"):
+def spoiling_setting_create(request,
+mri_setting_id,
+sequencespecific_id,
+template_name="experiment/mri_spoiling_setting_register.html"):
    
-    spoiling_setting_list = SpoilingType.objects.all().distinct()
+    spoiling_type_list = SpoilingType.objects.all().distinct()
     spoiling_setting_form = SpoilingSettingForm(request.POST or None)
+    mri_setting = FRMISetting.objects.get(id=mri_setting_id)
+    sequencespecific_obj = SequenceSpecific.objects.get(id=sequencespecific_id)
 
     if request.method == "POST":
         if request.POST["action"] == "save":
@@ -16974,7 +16979,10 @@ def spoiling_setting_create(request, template_name="experiment/mri_spoiling_sett
 
     context = {
         "spoiling_setting_form": spoiling_setting_form,
-        "spoiling_setting_list" : spoiling_setting_list,
+        "spoiling_type_list" : spoiling_type_list,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "creating": True,
         "editing": True,
     }

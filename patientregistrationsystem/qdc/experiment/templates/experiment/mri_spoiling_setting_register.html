@@ -44,9 +44,12 @@
             <div class="col-md-10">
                 <ol class="breadcrumb">
                     <li><a href="/home">{% trans "Home" %}</a></li>
-                    <li><a href="/experiment/mri_spoiling_setting/list/">{% trans "MRI Spoiling Setting List" %}</a></li>
-
-
+                    <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                    <li><a href="/experiment/research_project/{{ mri_setting.experiment.id }}">{{ mri_setting.experiment.research_project.title }}</a></li>
+                    <li><a href="/experiment/{{ mri_setting.experiment.id }}">{{ mri_setting.experiment.title }}</a></li>
+                    <li><a href="/experiment/mri_setting/{{ mri_setting.id }}">{{ mri_setting.name }}</a></li>
+                    <li><a href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}">{{ sequencespecific_obj.sequence_name }}</a></li>
+                    
                     {% if creating %}
                     <li class="active">{% trans "New MRI Spoiling Setting" %}</li>
                     {% else %}
