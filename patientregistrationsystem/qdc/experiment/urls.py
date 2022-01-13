@@ -1162,6 +1162,21 @@ urlpatterns = [
         name="rfcontrast_edit",
     ),
 
+    # register Slice Acceleration
+    url(r"^sequencespecific/(?P<sequencespecific_id>\d+)/sliceacceleration/new/$",
+        views.sliceacceleration_create,
+        name="sliceacceleration_new"),
+    url(
+        r"^sequencespecific/(?P<sequencespecific_id>\d+)/sliceacceleration/$",
+        views.sliceacceleration_view,
+        name="sliceacceleration_view",
+    ),
+    url(
+        r"^sequencespecific/(?P<sequencespecific_id>\d+)/sliceacceleration/edit/$",
+        views.sliceacceleration_update,
+        name="sliceacceleration_edit",
+    ),
+
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
     #    views.questionnaire_view,

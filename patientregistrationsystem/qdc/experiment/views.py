@@ -153,6 +153,7 @@ from .models import (
     TimingParameters,
     SequenceSpecific,
     RFContrast,
+    SliceAcceleration,
 )
 
 from .forms import (
@@ -241,6 +242,7 @@ from .forms import (
     FMRIMachineSettingsForm,
     TimingParametersForm,
     RFContrastForm,
+    SliceAccelerationForm,
 )
 
 from .portal import (
@@ -18388,3 +18390,94 @@ def rfcontrast_update(
 
     return render(request, template_name, context)
 # end CRUD RFContrast
+
+
+# CRUD Slice Acceleration
+@login_required
+@permission_required("experiment.add_sliceacceleration")
+def sliceacceleration_create(request, sequencespecific_id, template_name="experiment/sliceacceleration_register.html"):
+    sliceacceleration_form = SliceAccelerationForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if sliceacceleration_form.is_valid():
+                sliceacceleration_added = sliceacceleration_form.save(commit=False)
+                sequence_specific = SequenceSpecific.objects.get(id=sequencespecific_id)
+                sliceacceleration_added.sequence_specific = sequence_specific
+                sliceacceleration_added.save()
+
+                messages.success(request, _("Slice Acceleration included successfully."))
+
+                redirect_url = reverse(
+                    "sliceacceleration_view", args=(sequence_specific.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "sliceacceleration_form": sliceacceleration_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_sliceacceleration")
+def sliceacceleration_view(
+        request, sequencespecific_id, template_name="experiment/sliceacceleration_register.html"
+):
+    sliceacceleration_ = get_object_or_404(SliceAcceleration, pk=sequencespecific_id)
+    sliceacceleration_form = SliceAccelerationForm(request.POST or None, instance=sliceacceleration_)
+
+    for field in sliceacceleration_form.fields:
+        sliceacceleration_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+            sliceacceleration_.delete()
+
+            messages.success(request, _("Slice Acceleration setting was removed successfully."))
+
+            redirect_url = reverse("sliceacceleration_view", args=(sequencespecific_id, ))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "sliceacceleration_form": sliceacceleration_form,
+        "sliceacceleration": sliceacceleration_,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_sliceacceleration")
+def sliceacceleration_update(
+        request, sequencespecific_id, template_name="experiment/sliceacceleration_register.html"
+):
+    sliceacceleration = get_object_or_404(SliceAcceleration, pk=sequencespecific_id)
+
+    sliceacceleration_form = SliceAccelerationForm(request.POST or None, instance=sliceacceleration)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if sliceacceleration_form.is_valid():
+
+                if sliceacceleration_form.has_changed():
+                    sliceacceleration_form.save()
+                    messages.success(request, _("Slice Acceleration updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("sliceacceleration_view", args=(sequencespecific_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "sliceacceleration": sliceacceleration,
+        "sliceacceleration_form": sliceacceleration_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD SliceAcceleration
