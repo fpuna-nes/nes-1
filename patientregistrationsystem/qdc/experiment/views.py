@@ -17643,7 +17643,7 @@ def frmi_setting_create(
 
                 frmi_setting_added = mri_setting_form.save(commit=False)
                 frmi_setting_added.experiment_id = experiment_id
-                frmi_setting_added.fmrimachinesetting= FMRIMachineSettings.objects.get(id=frmi_machine_setting_added.id)
+                frmi_setting_added.fmri_machine_setting= FMRIMachineSettings.objects.get(id=frmi_machine_setting_added.id)
                 frmi_setting_added.save()
 
 
@@ -17836,7 +17836,7 @@ def frmi_setting_update(
 ):
     mri_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
     mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
-    mri_machine_obj = FMRIMachineSettings.objects.get(id=mri_setting.fmrimachinesetting.id)
+    mri_machine_obj = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
     mri_scanner_obj = MRIScanner.objects.get(id=mri_machine_obj.mri_machine.id)
     fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=mri_machine_obj)
     list_of_mri_scanner = MRIScanner.objects.all().distinct()
@@ -17888,7 +17888,7 @@ def mri_setting_sequencespecific_create(
 
     creating = True
 
-    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmrimachinesetting.id)
+    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
 
     list_of_pulsesequence = PulseSequence.objects.all().distinct()
     sequencespecific_form = SequenceSpecificForm(request.POST or None)
