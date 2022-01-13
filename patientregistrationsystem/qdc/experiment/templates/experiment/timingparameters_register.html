@@ -45,16 +45,15 @@
             <div class="col-md-10">
                 <ol class="breadcrumb">
                     <li><a href="/home">{% trans "Home" %}</a></li>
-                    <li><a href="/experiment/timingparameters/list/">{% trans "Timing Parameters List" %}</a></li>
                     {% if creating %}
                     <li class="active">{% trans "New Timing Parameters Settings" %}</li>
                     {% else %}
                     {% if editing %}
-                    <li><a href="/experiment/timingparameters/{{ timingparameters.id }}">{{ timingparameter_form.id }}</a>
+                    <li><a href="/experiment/timingparameters/{{ timingparameter.sequence_specific.id }}">BREAD_CRUMB_PENDIENTE</a>
                     </li>
                     <li class="active">{% trans "Editing" %}</li>
                     {% else %}
-                    <li class="active"> {{ timingparameter_form.id }} </li>
+                    <li class="active"> {{ timingparameter.sequence_specific.id }} </li>
                     {% endif %}
                     {% endif %}
                 </ol>
@@ -64,7 +63,7 @@
         <div class="tab-pane fade in active" id="menuUserTab">
             <div class="col-md-10">
                 <div class="container span6 offset3 well ">
-                    <h4><span class="glyphicon glyphicon-stats"></span> {% trans "Timing Parameters Settings" %}</h4>
+                    <h4><span class="glyphicon glyphicon-stats"></span> {% trans "Timing Parameter Settings" %}</h4>
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
@@ -116,72 +115,9 @@
                     </div>
                 </div>
 
-                <!-- {% if not editing %}
-
-                <div class="container span6 offset3 well ">
-                    <h4><span class="glyphicon glyphicon-cog"></span> {% trans "Settings:" %}</h4>
-                    <div class="form-group">
-                        <table class="table table-striped col-xs-12 col-md-12">
-                            <thead>
-                                <tr>
-                                    <th>{% trans "Type" %}</th>
-                                    <th>{% trans "Setting" %}</th>
-                                    <th>{% trans "Delete" %}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                <tr>
-                                    <td>{% trans "Timing Parameters" %}</td>
-                                    <td>
-                                        {% if timingparameters.timingparameters %}
-
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/timingparameters/{{ timingparameters.id }}/timingparameters">
-                                            {{ timingparameters.tms_device_setting.tms_device.identification }}
-                                        </a>
-                                        <blockquote>
-                                            <i>
-                                                <h6>
-                                                    {% trans "Manufacturer" %}: {{
-                                                    tms_setting.tms_device_setting.tms_device.manufacturer.name }}<br />
-                                                    {% trans "TMS device" %}: {{
-                                                    tms_setting.tms_device_setting.tms_device.identification }}<br />
-                                                    {% trans "Coil model" %}: {{
-                                                    tms_setting.tms_device_setting.coil_model.name }}<br />
-                                                    {% trans "Pulse type" %}: {{
-                                                    tms_setting.tms_device_setting.pulse_stimulus_type }}
-                                                </h6>
-                                            </i>
-                                        </blockquote>
-
-                                        {% else %}
-                                        <a role="menuitem" tabindex="-1"
-                                            href="/experiment/tms_setting/{{ tms_setting.id }}/tms_device"> {% trans "+
-                                            Add setting" %}</a>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if tms_setting.tms_device_setting %}
-                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
-                                            data-placement="right" title="{% trans " Delete setting from list" %}"
-                                            style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                            onclick="show_modal_remove_setting('timingparameters');"></a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-
-                    </div>
-                </div>
-
-                {% endif %} -->
-
                 <div class="btn-toolbar">
                     {% if not editing %}
-                    <a href="/experiment/timingparameters/edit/{{ timingparameters.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                    <a href="{% url 'timingparameter_edit' sequencespecific_id=timingparameter.sequence_specific.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
                     {% endif %}
                     {% if not editing and perms.experiment.delete_experiment %}
                     <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
