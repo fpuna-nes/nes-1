@@ -1004,6 +1004,7 @@ urlpatterns = [
         views.frmi_solution_update,
         name="frmi_solution_edit",
     ),
+
     # register PulseSequence device
     url(
         r"^pulsesequencedevice/list/$",
@@ -1129,7 +1130,22 @@ urlpatterns = [
         r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)/edit$",
         views.frmi_machine_update,
         name="frmi_machine_update",
-    ),   
+    ),
+
+    # register TimingParameters
+    url(r"^sequencespecific/(?P<sequencespecific_id>\d+)/timingparameters/new/$",
+        views.timingparameter_create,
+        name="timingparameter_new"),
+    url(
+        r"^sequencespecific/(?P<sequencespecific_id>\d+)/timingparameters/$",
+        views.timingparameter_view,
+        name="timingparameter_view",
+    ),
+    url(
+        r"^sequencespecific/(?P<sequencespecific_id>\d+)/timingparameters/edit/$",
+        views.timingparameter_update,
+        name="timingparameter_edit",
+    ),
 
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
