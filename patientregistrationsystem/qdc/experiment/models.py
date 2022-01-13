@@ -1897,7 +1897,13 @@ class SequenceSpecific(models.Model):
     mt_pulse_duration = models.IntegerField(null=True, blank=True)
 
 
-class InPlaneSpatialEncoding(SequenceSpecific):
+class InPlaneSpatialEncoding(models.Model):
+    sequence_specific = models.OneToOneField(
+        SequenceSpecific,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        db_column='id'
+    )
     parallel_acquisition_technique = models.ForeignKey(ParallelImaging)
     number_shots = models.IntegerField()
     parallel_reduction_factor_in_plane = models.CharField(max_length=255)
@@ -1909,7 +1915,13 @@ class InPlaneSpatialEncoding(SequenceSpecific):
     mixing_time = models.IntegerField()
 
 
-class SpoilingSetting(SequenceSpecific):
+class SpoilingSetting(models.Model):
+    sequence_specific = models.OneToOneField(
+        SequenceSpecific,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        db_column='id'
+    )
     type = models.ForeignKey(SpoilingType)
     rf_phase_increment = models.IntegerField()
     gradent_moment = models.IntegerField()
@@ -1917,12 +1929,24 @@ class SpoilingSetting(SequenceSpecific):
     state = models.BooleanField()
 
 
-class SliceAcceleration(SequenceSpecific):
+class SliceAcceleration(models.Model):
+    sequence_specific = models.OneToOneField(
+        SequenceSpecific,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        db_column='id'
+    )
     multiband_acceleration_factor = models.IntegerField()
     name = models.CharField(max_length=150)
 
 
-class RFContrast(SequenceSpecific):
+class RFContrast(models.Model):
+    sequence_specific = models.OneToOneField(
+        SequenceSpecific,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        db_column='id'
+    )
     flip_angle = models.CharField(max_length=150)
     negative_contrast = models.BooleanField()
 
