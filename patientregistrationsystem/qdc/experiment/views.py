@@ -152,6 +152,7 @@ from .models import (
     ParallelImaging,
     SpoilingSetting,
     FMRIMachineSettings,
+    TimingParameters, SequenceSpecific,
 )
 
 from .forms import (
@@ -238,6 +239,7 @@ from .forms import (
     SpoilingSettingForm,
     SequenceSpecificForm,
     FMRIMachineSettingsForm,
+    TimingParametersForm,
 )
 
 from .portal import (
@@ -18052,7 +18054,6 @@ def frmi_machine_update(
         redirect_url = reverse("frmi_machine_view", args=(mri_setting_id, frmi_machine_id,))
         return HttpResponseRedirect(redirect_url)
 
-
     context = {"fmri_machine_form": fmri_machine_form, 
                "mri_setting": mri_setting,
                "mri_machine_setting":fmri_machine,
@@ -18062,3 +18063,120 @@ def frmi_machine_update(
                "can_change": can_change,}
 
     return render(request, template_name, context)
+
+
+# CRUD TimingParameters
+@login_required
+@permission_required("experiment.change_timingparameters")
+def timingparameters_list(request, template_name="experiment/timingparameters_list.html"):
+    return render(request, template_name, {"equipments": TimingParameters.objects.all()})
+
+
+@login_required
+@permission_required("experiment.add_timingparameters")
+def timingparameters_create(request, template_name="experiment/timingparameters_register.html"):
+    timingparameter_form = TimingParametersForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if timingparameter_form.is_valid():
+                timingparameters_added = timingparameter_form.save(commit=False)
+
+                # Agrego Temporalmente un sequence specific en duro como para poder continuar
+                sequence_specific = SequenceSpecific.objects.get(id=4)
+                timingparameters_added.sequence_specific = sequence_specific
+                # sequence_specific.__class__ = TimingParameters
+                #
+                # sequence_specific.echo_time = timingparameters_added.echo_time
+                # sequence_specific.inversion_time = timingparameters_added.inversion_time
+                # sequence_specific.slice_timing = timingparameters_added.slice_timing
+                # sequence_specific.slice_encoding_direction = timingparameters_added.slice_encoding_direction
+                # sequence_specific.dwell_time = timingparameters_added.dwell_time
+                #
+                # sequence_specific.save(
+                #     update_fields=[
+                #         'id',
+                #         'echo_time',
+                #         'inversion_time',
+                #         'slice_timing',
+                #         'slice_encoding_direction',
+                #         'dwell_time',
+                #     ]
+                # )
+                timingparameters_added.save()
+
+                messages.success(request, _("Timing Parameters included successfully."))
+
+                redirect_url = reverse(
+                    "timingparameters_view", args=(sequence_specific.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "timingparameter_form": timingparameter_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_timingparameters")
+def timingparameters_view(
+        request, timingparameters_id, template_name="experiment/timingparameters_register.html"
+):
+    timingparameters_ = get_object_or_404(TimingParameters, pk=timingparameters_id)
+    timingparameters_form = TimingParametersForm(request.POST or None, instance=timingparameters_)
+
+    for field in timingparameters_form.fields:
+        timingparameters_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+            timingparameters_.delete()
+
+            messages.success(request, _("Pulse Sequence setting was removed successfully."))
+
+            redirect_url = reverse("timingparameters_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "timingparameter_form": timingparameters_form,
+        "timingparameter": timingparameters_,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_timingparameters")
+def timingparameters_update(
+        request, timingparameters_id, template_name="experiment/timingparameters_register.html"
+):
+    timingparameters = get_object_or_404(TimingParameters, pk=timingparameters_id)
+
+    timingparameter_form = TimingParametersForm(request.POST or None, instance=timingparameters)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if timingparameter_form.is_valid():
+
+                if timingparameter_form.has_changed():
+                    timingparameter_form.save()
+                    messages.success(request, _("Pulse Sequence updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("timingparameters_view", args=(timingparameters.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "timingparameter": timingparameters,
+        "timingparameter_form": timingparameter_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD TimingParameters

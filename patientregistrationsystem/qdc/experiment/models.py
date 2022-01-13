@@ -1927,7 +1927,13 @@ class RFContrast(SequenceSpecific):
     negative_contrast = models.BooleanField()
 
 
-class TimingParameters(SequenceSpecific):
+class TimingParameters(models.Model):
+    sequence_specific = models.OneToOneField(
+        SequenceSpecific,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        db_column='id'
+    )
     echo_time = models.IntegerField()
     inversion_time = models.IntegerField()
     slice_timing = models.CharField(max_length=255)
