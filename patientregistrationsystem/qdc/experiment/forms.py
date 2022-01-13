@@ -2709,10 +2709,16 @@ class FRMISettingForm(ModelForm):
     class Meta:
         model = FRMISetting
 
-        # fields = ["name", "description", "archivo"]
-        fields = ["name", "description"]
+        fields = ["fmri_machine_setting", "name", "description"]
 
         widgets = {
+            "fmri_machine_setting": Select(
+                attrs={
+                    "class": "form-control",
+                    "required": "",
+                    "data-error": _("Data must be filled."),
+                }
+            ),
             "name": TextInput(
                 attrs={
                     "class": "form-control",
@@ -2729,14 +2735,14 @@ class FRMISettingForm(ModelForm):
                     "data-error": _("Description must be filled."),
                 }
             ),
-            # "archivo": FileInput(
-            #     attrs={
-            #         "class": "form-control",
-            #         "required": "",
-            #         "data-error": _("Archivo must be filled."),
-            #     },
-            # ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(FRMISettingForm, self).__init__(*args, **kwargs)
+
+        self.fields[
+            "fmri_machine_setting"
+        ].queryset = FMRIMachineSettings.objects.filter()
 
 
 class SliceAccelerationForm(ModelForm):

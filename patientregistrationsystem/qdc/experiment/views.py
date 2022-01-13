@@ -5,7 +5,6 @@ import json
 import random
 import tempfile
 import logging
-from requests.auth import HTTPBasicAuth
 import numpy as np
 
 import nwb
@@ -144,7 +143,6 @@ from .models import (
     ComponentAdditionalFile,
     GoalkeeperPhase,
     FRMISetting,
-    DataFile,
     MRIScanner,
     PulseSequence,
     PulseShape,
@@ -152,6 +150,7 @@ from .models import (
     ParallelImaging,
     SpoilingSetting,
     FMRIMachineSettings,
+    TimingParameters,
     SequenceSpecific,
 )
 
@@ -239,6 +238,7 @@ from .forms import (
     SpoilingSettingForm,
     SequenceSpecificForm,
     FMRIMachineSettingsForm,
+    TimingParametersForm,
 )
 
 from .portal import (
@@ -17630,6 +17630,52 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
 
 
 @login_required
+@permission_required("experiment.add_subject")
+def frmi_setting_create(
+    request, experiment_id, template_name="experiment/frmi_setting_register.html"
+):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+    
+    check_can_change(request.user, experiment.research_project)
+
+    mri_setting_form = FRMISettingForm(request.POST or None)
+    fmri_machine_form = FMRIMachineSettingsForm(request.POST or None)
+    list_of_mri_scanner = MRIScanner.objects.all().distinct()
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if mri_setting_form.is_valid() and fmri_machine_form.is_valid():
+
+                frmi_machine_setting_added = fmri_machine_form.save(commit=False)
+                frmi_machine_setting_added.save()
+
+                frmi_setting_added = mri_setting_form.save(commit=False)
+                frmi_setting_added.experiment_id = experiment_id
+                frmi_setting_added.fmri_machine_setting= FMRIMachineSettings.objects.get(id=frmi_machine_setting_added.id)
+                frmi_setting_added.save()
+
+
+
+                messages.success(request, _("FRMI setting included successfully."))
+
+                redirect_url = reverse(
+                    "frmi_setting_view", args=(frmi_setting_added.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "mri_setting_form": mri_setting_form,
+        "fmri_machine_form": fmri_machine_form,
+        "list_of_mri_scanner": list_of_mri_scanner,
+        "creating": True,
+        "editing": True,
+        "experiment": experiment,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
 @permission_required("experiment.register_equipment")
 def frmi_solution_create(
     request, template_name="experiment/frmi_solution_register.html"
@@ -17741,52 +17787,6 @@ def frmi_solution_update(
 
     return render(request, template_name, context)
 
-#CRUD frmi_setting
-@login_required
-@permission_required("experiment.add_subject")
-def frmi_setting_create(
-    request, experiment_id, template_name="experiment/frmi_setting_register.html"
-):
-    experiment = get_object_or_404(Experiment, pk=experiment_id)
-    
-    check_can_change(request.user, experiment.research_project)
-
-    mri_setting_form = FRMISettingForm(request.POST or None)
-    fmri_machine_form = FMRIMachineSettingsForm(request.POST or None)
-    list_of_mri_scanner = MRIScanner.objects.all().distinct()
-
-    if request.method == "POST":
-        if request.POST["action"] == "save":
-            if mri_setting_form.is_valid() and fmri_machine_form.is_valid():
-
-                frmi_machine_setting_added = fmri_machine_form.save(commit=False)
-                frmi_machine_setting_added.save()
-
-                frmi_setting_added = mri_setting_form.save(commit=False)
-                frmi_setting_added.experiment_id = experiment_id
-                frmi_setting_added.fmrimachinesetting= FMRIMachineSettings.objects.get(id=frmi_machine_setting_added.id)
-                frmi_setting_added.save()
-
-
-
-                messages.success(request, _("FRMI setting included successfully."))
-
-                redirect_url = reverse(
-                    "frmi_setting_view", args=(frmi_setting_added.id,)
-                )
-                return HttpResponseRedirect(redirect_url)
-
-    context = {
-        "mri_setting_form": mri_setting_form,
-        "fmri_machine_form": fmri_machine_form,
-        "list_of_mri_scanner": list_of_mri_scanner,
-        "creating": True,
-        "editing": True,
-        "experiment": experiment,
-    }
-
-    return render(request, template_name, context)
-
 
 @login_required
 @permission_required("experiment.view_researchproject")
@@ -17797,7 +17797,7 @@ def frmi_setting_view(
     mri_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
     mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
     #configuraciones de mri
-    mri_machine_obj = FMRIMachineSettings.objects.get(id=mri_setting.fmrimachinesetting.id)
+    mri_machine_obj = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
     mri_scanner_obj = MRIScanner.objects.get(id=mri_machine_obj.mri_machine.id)
     fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=mri_machine_obj)
     list_of_mri_scanner = MRIScanner.objects.all().distinct()  
@@ -17846,7 +17846,7 @@ def frmi_setting_update(
 ):
     mri_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
     mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
-    mri_machine_obj = FMRIMachineSettings.objects.get(id=mri_setting.fmrimachinesetting.id)
+    mri_machine_obj = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
     mri_scanner_obj = MRIScanner.objects.get(id=mri_machine_obj.mri_machine.id)
     fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=mri_machine_obj)
     list_of_mri_scanner = MRIScanner.objects.all().distinct()
@@ -17898,7 +17898,7 @@ def mri_setting_sequencespecific_create(
 
     creating = True
 
-    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmrimachinesetting.id)
+    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
 
     list_of_pulsesequence = PulseSequence.objects.all().distinct()
     sequencespecific_form = SequenceSpecificForm(request.POST or None)
@@ -18195,7 +18195,6 @@ def frmi_machine_update(
         redirect_url = reverse("frmi_machine_view", args=(mri_setting_id, frmi_machine_id,))
         return HttpResponseRedirect(redirect_url)
 
-
     context = {"fmri_machine_form": fmri_machine_form, 
                "mri_setting": mri_setting,
                "mri_machine_setting":fmri_machine,
@@ -18205,3 +18204,112 @@ def frmi_machine_update(
                "can_change": can_change,}
 
     return render(request, template_name, context)
+
+
+# CRUD TimingParameters
+@login_required
+@permission_required("experiment.add_timingparameters")
+def timingparameter_create(request, sequencespecific_id, template_name="experiment/timingparameters_register.html"):
+    timingparameter_form = TimingParametersForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if timingparameter_form.is_valid():
+                timingparameter_added = timingparameter_form.save(commit=False)
+                sequence_specific = SequenceSpecific.objects.get(id=sequencespecific_id)
+                timingparameter_added.sequence_specific = sequence_specific
+                # sequence_specific.__class__ = TimingParameters
+                #
+                # sequence_specific.echo_time = timingparameters_added.echo_time
+                # sequence_specific.inversion_time = timingparameters_added.inversion_time
+                # sequence_specific.slice_timing = timingparameters_added.slice_timing
+                # sequence_specific.slice_encoding_direction = timingparameters_added.slice_encoding_direction
+                # sequence_specific.dwell_time = timingparameters_added.dwell_time
+                #
+                # sequence_specific.save(
+                #     update_fields=[
+                #         'id',
+                #         'echo_time',
+                #         'inversion_time',
+                #         'slice_timing',
+                #         'slice_encoding_direction',
+                #         'dwell_time',
+                #     ]
+                # )
+                timingparameter_added.save()
+
+                messages.success(request, _("Timing Parameters included successfully."))
+
+                redirect_url = reverse(
+                    "timingparameters_view", args=(sequence_specific.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "timingparameter_form": timingparameter_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_timingparameters")
+def timingparameter_view(
+        request, sequencespecific_id, template_name="experiment/timingparameters_register.html"
+):
+    timingparameter_ = get_object_or_404(TimingParameters, pk=sequencespecific_id)
+    timingparameter_form = TimingParametersForm(request.POST or None, instance=timingparameter_)
+
+    for field in timingparameter_form.fields:
+        timingparameter_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+            timingparameter_.delete()
+
+            messages.success(request, _("Pulse Sequence setting was removed successfully."))
+
+            redirect_url = reverse("timingparameter_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "timingparameter_form": timingparameter_form,
+        "timingparameter": timingparameter_,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_timingparameters")
+def timingparameter_update(
+        request, sequencespecific_id, template_name="experiment/timingparameters_register.html"
+):
+    timingparameters = get_object_or_404(TimingParameters, pk=sequencespecific_id)
+
+    timingparameter_form = TimingParametersForm(request.POST or None, instance=timingparameters)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if timingparameter_form.is_valid():
+
+                if timingparameter_form.has_changed():
+                    timingparameter_form.save()
+                    messages.success(request, _("Pulse Sequence updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("timingparameters_view", args=(sequencespecific_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "timingparameter": timingparameters,
+        "timingparameter_form": timingparameter_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD TimingParameters
