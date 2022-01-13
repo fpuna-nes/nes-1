@@ -17792,7 +17792,8 @@ def frmi_setting_view(
     mri_machine_obj = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
     mri_scanner_obj = MRIScanner.objects.get(id=mri_machine_obj.mri_machine.id)
     fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=mri_machine_obj)
-    list_of_mri_scanner = MRIScanner.objects.all().distinct()
+    list_of_mri_scanner = MRIScanner.objects.all().distinct()  
+    list_of_sequencespecific= SequenceSpecific.objects.filter(fmri_settings=mri_setting)
     for field in mri_setting_form.fields:
         mri_setting_form.fields[field].widget.attrs["disabled"] = True
     
@@ -17824,6 +17825,7 @@ def frmi_setting_view(
         "list_of_mri_scanner": list_of_mri_scanner,
         "editing": False,
         "mri_scanner_obj": mri_scanner_obj,
+        "list_of_sequencespecific": list_of_sequencespecific,
     }
 
     return render(request, template_name, context)
@@ -17910,7 +17912,7 @@ def mri_setting_sequencespecific_create(
 
                 messages.success(request, _("Sequence Specific created successfully."))
                 redirect_url = reverse(
-                    "frmi_setting_view", args=(mri_setting_id,)
+                    "mri_setting_sequencespecific_view", args=(mri_setting_id,sequencespecific_added.id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 
@@ -17928,6 +17930,145 @@ def mri_setting_sequencespecific_create(
         "mri_setting":mri_setting,
         "sequencespecific_form": sequencespecific_form,
         "mrimachine_form":mrimachine_form,
+        # "emg_electrode_setting": emg_electrode_setting,
+        # "emg_amplifier_setting_form": emg_amplifier_setting_form,
+        # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
+        # "equipment_form": equipment_form,
+        # "manufacturer_list": list_of_manufacturers,
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.change_experiment")
+def mri_setting_sequencespecific_view(
+    request,
+    mri_setting_id,
+    sequencespecific_id,
+    template_name="experiment/fmri_setting_sequencespecific.html",
+):
+
+    mri_setting = get_object_or_404(
+        FRMISetting, pk=mri_setting_id
+    )
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
+
+    can_change = get_can_change(
+        request.user, mri_setting.experiment.research_project
+    )
+
+    creating = False
+    editing = False
+
+    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmrimachinesetting.id)
+
+    list_of_pulsesequence = PulseSequence.objects.all().distinct()
+
+    sequencespecific_form = SequenceSpecificForm(request.POST or None,instance=sequencespecific_obj)
+    mrimachine_form = FMRIMachineSettingsForm(request.POST or None, instance=mri_machine_list)
+
+    for field in mrimachine_form.fields:
+        mrimachine_form.fields[field].widget.attrs["disabled"] = True
+
+    for field in sequencespecific_form.fields:
+        sequencespecific_form.fields[field].widget.attrs["disabled"] = True    
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST["action"] == "remove":
+                # TODO: checking if there is some FRMI Data using it
+                # TODO: checking if there is some FRMI Step using it
+
+                sequencespecific_obj.delete()
+                messages.success(request, _("Sequence Specific was removed successfully."))
+
+                redirect_url = reverse("frmi_setting_view", args=(mri_setting_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "creating": creating,
+        "editing": editing,
+        "can_change": can_change,
+        "list_pulsesequence":list_of_pulsesequence,
+        "mri_setting":mri_setting,
+        "sequencespecific_form": sequencespecific_form,
+        "mrimachine_form":mrimachine_form,
+        "sequencespecific_obj":sequencespecific_obj,
+        # "emg_electrode_setting": emg_electrode_setting,
+        # "emg_amplifier_setting_form": emg_amplifier_setting_form,
+        # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
+        # "equipment_form": equipment_form,
+        # "manufacturer_list": list_of_manufacturers,
+    }
+
+    return render(request, template_name, context)
+
+@login_required
+@permission_required("experiment.change_experiment")
+def mri_setting_sequencespecific_update(
+    request,
+    mri_setting_id,
+    sequencespecific_id,
+    template_name="experiment/fmri_setting_sequencespecific.html",
+):
+
+    mri_setting = get_object_or_404(
+        FRMISetting, pk=mri_setting_id
+    )
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
+
+    can_change = get_can_change(
+        request.user, mri_setting.experiment.research_project
+    )
+
+    creating = True
+    editing = True
+
+    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmrimachinesetting.id)
+
+    list_of_pulsesequence = PulseSequence.objects.all().distinct()
+
+    sequencespecific_form = SequenceSpecificForm(request.POST or None,instance=sequencespecific_obj)
+    mrimachine_form = FMRIMachineSettingsForm(request.POST or None, instance=mri_machine_list)
+
+    # for field in mrimachine_form.fields:
+    #     mrimachine_form.fields[field].widget.attrs["disabled"] = True
+
+    # for field in sequencespecific_form.fields:
+    #     sequencespecific_form.fields[field].widget.attrs["disabled"] = False    
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST["action"] == "save":
+                    # frmi_machine_added.mri_machine = request.POST["software_version"]
+                if sequencespecific_form.is_valid():
+
+                    sequencespecific_added = sequencespecific_form.save(commit=False)
+                    sequencespecific_added.fmri_settings= mri_setting
+                    sequencespecific_added.save()
+
+                    messages.success(request, _("Sequence Specific created successfully."))
+                    redirect_url = reverse(
+                        "mri_setting_sequencespecific_view", args=(mri_setting_id,sequencespecific_added.id,)
+                    )
+                    return HttpResponseRedirect(redirect_url)
+
+                else:
+                    messages.warning(request, _("Information not saved."))
+
+    context = {
+        "creating": creating,
+        "editing": editing,
+        "can_change": can_change,
+        "list_pulsesequence":list_of_pulsesequence,
+        "mri_setting":mri_setting,
+        "sequencespecific_form": sequencespecific_form,
+        "mrimachine_form":mrimachine_form,
+        "sequencespecific_obj":sequencespecific_obj,
         # "emg_electrode_setting": emg_electrode_setting,
         # "emg_amplifier_setting_form": emg_amplifier_setting_form,
         # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
