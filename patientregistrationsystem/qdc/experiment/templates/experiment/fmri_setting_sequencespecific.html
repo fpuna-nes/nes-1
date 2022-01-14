@@ -299,15 +299,15 @@
                         <tr>
                             <td>{% trans "RF Contrast" %}</td>
                             <td>
-                                {% if mri_setting.eeg_solution_setting %}
+                                {% if rfcontrast_obj %}
 
-                                    <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
-                                        {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
+                                    <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/rfcontrast/view/">
+                                        {% trans "Rf Contrast" %}
                                     </a>
 
                                 {% else %}
                                     {% if can_change %}
-                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/rfcontrast/new/"> {% trans "+ Add setting" %}</a>
                                     {% endif %}
                                 {% endif %}
                             </td>
@@ -407,7 +407,7 @@
                 {% if not editing and not creating and can_change %}
                     <div class="btn-group pull-left">
                         <!-- mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/edit -->
-                        <a href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/edit" class="btn btn-primary">{% trans "Edit" %}</a>
+                        <a href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/rfcontrast/edit" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
 
@@ -441,7 +441,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                {% trans "Are you sure you want to delete this sequence specific?" %}
+                {% trans "Are you sure you want to delete this rf contrast setting?" %}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>

@@ -17979,13 +17979,17 @@ def mri_setting_sequencespecific_view(
         SequenceSpecific, pk=sequencespecific_id
     )
 
-
-
     spoilingsetting_obj = None
     try:
         spoilingsetting_obj = SpoilingSetting.objects.get(sequence_specific=sequencespecific_obj)
     except SpoilingSetting.DoesNotExist:
         spoilingsetting_obj = None
+    
+    rfcontrast_obj = None
+    try:
+        rfcontrast_obj = RFContrast.objects.get(sequence_specific=sequencespecific_obj)
+    except RFContrast.DoesNotExist:
+        rfcontrast_obj = None
 
     timingparameter_obj = None
     try:
@@ -18036,6 +18040,7 @@ def mri_setting_sequencespecific_view(
         "sequencespecific_obj":sequencespecific_obj,
         "spoilingsetting_obj": spoilingsetting_obj,
         "timingparameter_obj": timingparameter_obj,
+        "rfcontrast_obj": rfcontrast_obj,
         # "emg_electrode_setting": emg_electrode_setting,
         # "emg_amplifier_setting_form": emg_amplifier_setting_form,
         # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
@@ -18342,8 +18347,13 @@ def timingparameter_edit(
 # CRUD RF Contrast
 @login_required
 @permission_required("experiment.add_rfcontrast")
-def rfcontrast_create(request, sequencespecific_id, template_name="experiment/rfcontrast_register.html"):
+def rfcontrast_create(request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_rfcontrast_register.html"):
+    
     rfcontrast_form = RFContrastForm(request.POST or None)
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
 
     if request.method == "POST":
         if request.POST["action"] == "save":
@@ -18356,12 +18366,15 @@ def rfcontrast_create(request, sequencespecific_id, template_name="experiment/rf
                 messages.success(request, _("RF Contrast included successfully."))
 
                 redirect_url = reverse(
-                    "rfcontrast_view", args=(sequence_specific.id,)
+                    "rfcontrast_view", args=(mri_setting_id, sequence_specific.id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "rfcontrast_form": rfcontrast_form,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "creating": True,
         "editing": True,
     }
@@ -18372,10 +18385,14 @@ def rfcontrast_create(request, sequencespecific_id, template_name="experiment/rf
 @login_required
 @permission_required("experiment.change_rfcontrast")
 def rfcontrast_view(
-        request, sequencespecific_id, template_name="experiment/rfcontrast_register.html"
+        request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_rfcontrast_register.html"
 ):
     rfcontrast_ = get_object_or_404(RFContrast, pk=sequencespecific_id)
     rfcontrast_form = RFContrastForm(request.POST or None, instance=rfcontrast_)
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
 
     for field in rfcontrast_form.fields:
         rfcontrast_form.fields[field].widget.attrs["disabled"] = True
@@ -18386,12 +18403,15 @@ def rfcontrast_view(
 
             messages.success(request, _("RF Contrast setting was removed successfully."))
 
-            redirect_url = reverse("rfcontrast_view", args=(sequencespecific_id, ))
+            redirect_url = reverse("mri_setting_sequencespecific_view", args=(mri_setting_id,sequencespecific_id,))
             return HttpResponseRedirect(redirect_url)
 
     context = {
         "rfcontrast_form": rfcontrast_form,
         "rfcontrast": rfcontrast_,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "editing": False,
     }
 
@@ -18401,9 +18421,13 @@ def rfcontrast_view(
 @login_required
 @permission_required("experiment.change_rfcontrast")
 def rfcontrast_update(
-        request, sequencespecific_id, template_name="experiment/rfcontrast_register.html"
+        request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_rfcontrast_register.html"
 ):
     rfcontrast = get_object_or_404(RFContrast, pk=sequencespecific_id)
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
 
     rfcontrast_form = RFContrastForm(request.POST or None, instance=rfcontrast)
 
@@ -18417,12 +18441,15 @@ def rfcontrast_update(
                 else:
                     messages.success(request, _("There is no changes to save."))
 
-                redirect_url = reverse("rfcontrast_view", args=(sequencespecific_id,))
+                redirect_url = reverse("rfcontrast_view", args=(mri_setting_id, sequencespecific_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "rfcontrast": rfcontrast,
         "rfcontrast_form": rfcontrast_form,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "editing": True,
     }
 

@@ -1123,16 +1123,16 @@ urlpatterns = [
         name="timingparameter_edit",
     ),
     # register RF Contrast
-    url(r"^sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/new/$",
+    url(r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/new/$",
         views.rfcontrast_create,
         name="rfcontrast_new"),
     url(
-        r"^sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/$",
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/view/$",
         views.rfcontrast_view,
         name="rfcontrast_view",
     ),
     url(
-        r"^sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/edit/$",
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/edit/$",
         views.rfcontrast_update,
         name="rfcontrast_edit",
     ),
