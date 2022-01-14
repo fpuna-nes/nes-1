@@ -16971,13 +16971,15 @@ template_name="experiment/mri_spoiling_setting_register.html"):
     if request.method == "POST":
         if request.POST["action"] == "save":
             if spoiling_setting_form.is_valid():
+
                 spoiling_setting_added = spoiling_setting_form.save(commit=False)
+                spoiling_setting_added.sequence_specific = sequencespecific_obj
                 spoiling_setting_added.save()
 
                 messages.success(request, _("MRI Spoiling Setting included successfully."))
 
                 redirect_url = reverse(
-                    "spoiling_setting_view", args=(spoiling_setting_added.id,)
+                    "spoiling_setting_view", args=(mri_setting_id,sequencespecific_id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 
@@ -16997,11 +16999,13 @@ template_name="experiment/mri_spoiling_setting_register.html"):
 @login_required
 @permission_required("experiment.view_researchproject")
 def spoiling_setting_view(
-    request, spoiling_setting_id, template_name="experiment/mri_spoiling_setting_register.html"
+    request, mri_setting_id,sequencespecific_id, template_name="experiment/mri_spoiling_setting_register.html"
 ):
     spoiling_type_list = SpoilingType.objects.all().distinct()
-    spoiling_setting_obj = get_object_or_404(SpoilingSetting, pk=spoiling_setting_id)
+    spoiling_setting_obj = get_object_or_404(SpoilingSetting, sequence_specific=sequencespecific_id)
     spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting_obj)
+    mri_setting = FRMISetting.objects.get(id=mri_setting_id)
+    sequencespecific_obj = SequenceSpecific.objects.get(id=sequencespecific_id)
 
     for field in spoiling_setting_form.fields:
         spoiling_setting_form.fields[field].widget.attrs["disabled"] = True
@@ -17013,13 +17017,16 @@ def spoiling_setting_view(
 
             messages.success(request, _("Spoiling setting was removed successfully."))
 
-            redirect_url = reverse("spoiling_setting_list", args=())
+            redirect_url = reverse("mri_setting_sequencespecific_view", args=(mri_setting_id,sequencespecific_id,))
             return HttpResponseRedirect(redirect_url)
 
     context = {
         "spoiling_setting_form": spoiling_setting_form,
         "spoiling_type_list": spoiling_type_list,
         "spoiling_setting_obj": spoiling_setting_obj,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "editing": False,
     }
 
@@ -17029,11 +17036,12 @@ def spoiling_setting_view(
 @login_required
 @permission_required("experiment.register_equipment")
 def spoiling_setting_update(
-    request, spoiling_setting_id, template_name="experiment/mri_spoiling_setting_register.html"
+    request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_spoiling_setting_register.html"
 ):
-    spoiling_setting_obj = get_object_or_404(SpoilingSetting, pk=spoiling_setting_id)
+    spoiling_setting_obj = get_object_or_404(SpoilingSetting, sequence_specific=sequencespecific_id)
     spoiling_type_list = SpoilingType.objects.all().distinct()
-    
+    mri_setting = FRMISetting.objects.get(id=mri_setting_id)
+    sequencespecific_obj = SequenceSpecific.objects.get(id=sequencespecific_id)
     spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting_obj)
 
     if request.method == "POST":
@@ -17046,7 +17054,7 @@ def spoiling_setting_update(
                 else:
                     messages.success(request, _("There is no changes to save."))
 
-                redirect_url = reverse("spoiling_setting_view", args=(spoiling_setting_obj.id,))
+                redirect_url = reverse("spoiling_setting_view", args=(mri_setting_id,sequencespecific_id,))
                 return HttpResponseRedirect(redirect_url)
 
     
@@ -17054,6 +17062,9 @@ def spoiling_setting_update(
         "spoiling_setting_form": spoiling_setting_form,
         "spoiling_type_list": spoiling_type_list,
         "spoiling_setting_obj": spoiling_setting_obj,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "editing": True,
     }
 
@@ -17901,6 +17912,7 @@ def mri_setting_sequencespecific_create(
     )
 
     creating = True
+    editing = False
 
     mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
 
@@ -17936,7 +17948,7 @@ def mri_setting_sequencespecific_create(
 
     context = {
         "creating": creating,
-        "editing": False,
+        "editing": editing,
         "can_change": can_change,
         "list_pulsesequence":list_of_pulsesequence,
         "mri_setting":mri_setting,
@@ -17967,6 +17979,14 @@ def mri_setting_sequencespecific_view(
         SequenceSpecific, pk=sequencespecific_id
     )
 
+
+
+    spoilingsetting_obj = None
+    try:
+        spoilingsetting_obj = SpoilingSetting.objects.get(sequence_specific=sequencespecific_obj)
+    except SpoilingSetting.DoesNotExist:
+        spoilingsetting_obj = None
+
     can_change = get_can_change(
         request.user, mri_setting.experiment.research_project
     )
@@ -17974,7 +17994,7 @@ def mri_setting_sequencespecific_view(
     creating = False
     editing = False
 
-    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmrimachinesetting.id)
+    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
 
     list_of_pulsesequence = PulseSequence.objects.all().distinct()
 
@@ -18008,6 +18028,7 @@ def mri_setting_sequencespecific_view(
         "sequencespecific_form": sequencespecific_form,
         "mrimachine_form":mrimachine_form,
         "sequencespecific_obj":sequencespecific_obj,
+        "spoilingsetting_obj": spoilingsetting_obj,
         # "emg_electrode_setting": emg_electrode_setting,
         # "emg_amplifier_setting_form": emg_amplifier_setting_form,
         # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
@@ -18040,7 +18061,7 @@ def mri_setting_sequencespecific_update(
     creating = True
     editing = True
 
-    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmrimachinesetting.id)
+    mri_machine_list = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
 
     list_of_pulsesequence = PulseSequence.objects.all().distinct()
 

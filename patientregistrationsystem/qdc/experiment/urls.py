@@ -1011,17 +1011,17 @@ urlpatterns = [
         views.pulsesequence_list,
         name="pulsesequence_list",
     ),
-    # url(r"^pulsesequence/new/$", views.pulsesequence_create, name="pulsesequence_new"),
-    # url(
-    #     r"^pulsesequence/(?P<pulsesequence_id>\d+)/$",
-    #     views.pulsesequence_setting_view,
-    #     name="pulsesequence_setting_view",
-    # ),
-    # url(
-    #     r"^pulsesequence/edit/(?P<pulsesequence_id>\d+)/$",
-    #     views.pulsesequence_update,
-    #     name="pulsesequence_setting_edit",
-    # ),
+    url(r"^pulsesequence/new/$", views.pulsesequence_create, name="pulsesequence_new"),
+    url(
+        r"^pulsesequence/(?P<pulsesequence_id>\d+)/$",
+        views.pulsesequence_setting_view,
+        name="pulsesequence_setting_view",
+    ),
+    url(
+        r"^pulsesequence/edit/(?P<pulsesequence_id>\d+)/$",
+        views.pulsesequence_update,
+        name="pulsesequence_setting_edit",
+    ),
     # register PulseShape device
     url(
         r"^pulseshapedevice/list/$",
@@ -1077,30 +1077,6 @@ urlpatterns = [
         name="parallelimaging_setting_edit",
     ),
 
-
-    # ADD MRI SPOILING SETTING
-    url(
-        r"^mriscannersetting/machinesetting/list/$",
-        views.spoiling_setting_list,
-        name="spoiling_setting_list",
-    ),
-    url(
-        r"^mriscannersetting/machinesetting/new/$",
-        views.spoiling_setting_create,
-        name="spoiling_setting_new",
-    ),
-    url(
-        r"^mriscannersetting/machinesetting/(?P<spoiling_setting_id>\d+)/$",
-        views.spoiling_setting_view,
-        name="spoiling_setting_view",
-    ),
-    url(
-        r"^mriscannersetting/machinesetting/edit/(?P<spoiling_setting_id>\d+)/$",
-        views.spoiling_setting_update,
-        name="spoiling_setting_edit",
-    ),
-
-
     url(
         r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/new$",
         views.mri_setting_sequencespecific_create,
@@ -1146,7 +1122,6 @@ urlpatterns = [
         views.timingparameter_update,
         name="timingparameter_edit",
     ),
-
     # register RF Contrast
     url(r"^sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/new/$",
         views.rfcontrast_create,
@@ -1175,6 +1150,27 @@ urlpatterns = [
         r"^sequencespecific/(?P<sequencespecific_id>\d+)/sliceacceleration/edit/$",
         views.sliceacceleration_update,
         name="sliceacceleration_edit",
+    ),
+    # ADD MRI SPOILING SETTING
+    url(
+        r"^mriscannersetting/machinesetting/list/$",
+        views.spoiling_setting_list,
+        name="spoiling_setting_list",
+    ),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/spoilingsetting/new/$",
+        views.spoiling_setting_create,
+        name="spoiling_setting_new",
+    ),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/spoilingsetting/view$",
+        views.spoiling_setting_view,
+        name="spoiling_setting_view",
+    ),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/spoilingsetting/edit$",
+        views.spoiling_setting_update,
+        name="spoiling_setting_edit",
     ),
 
     # url(
