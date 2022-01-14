@@ -17996,6 +17996,12 @@ def mri_setting_sequencespecific_view(
         timingparameter_obj = TimingParameters.objects.get(sequence_specific=sequencespecific_id)
     except TimingParameters.DoesNotExist:
         timingparameter_obj = None
+    
+    sliceacceleration_obj = None
+    try:
+        sliceacceleration_obj = SliceAcceleration.objects.get(sequence_specific=sequencespecific_id)
+    except SliceAcceleration.DoesNotExist:
+        sliceacceleration_obj = None
 
     can_change = get_can_change(
         request.user, mri_setting.experiment.research_project
@@ -18041,6 +18047,7 @@ def mri_setting_sequencespecific_view(
         "spoilingsetting_obj": spoilingsetting_obj,
         "timingparameter_obj": timingparameter_obj,
         "rfcontrast_obj": rfcontrast_obj,
+        "sliceacceleration_obj": sliceacceleration_obj,
         # "emg_electrode_setting": emg_electrode_setting,
         # "emg_amplifier_setting_form": emg_amplifier_setting_form,
         # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
@@ -18457,11 +18464,15 @@ def rfcontrast_update(
 # end CRUD RFContrast
 
 
-# CRUD Slice Acceleration
+# CRUD SliceAcceleration
 @login_required
 @permission_required("experiment.add_sliceacceleration")
-def sliceacceleration_create(request, sequencespecific_id, template_name="experiment/sliceacceleration_register.html"):
-    sliceacceleration_form = SliceAccelerationForm(request.POST or None)
+def sliceacceleration_create(request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_sliceacceleration_register.html"):
+    sliceacceleration_form = SliceAccelerationForm(request.POST or None)    
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
 
     if request.method == "POST":
         if request.POST["action"] == "save":
@@ -18474,12 +18485,15 @@ def sliceacceleration_create(request, sequencespecific_id, template_name="experi
                 messages.success(request, _("Slice Acceleration included successfully."))
 
                 redirect_url = reverse(
-                    "sliceacceleration_view", args=(sequence_specific.id,)
+                    "sliceacceleration_view", args=(mri_setting_id, sequence_specific.id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "sliceacceleration_form": sliceacceleration_form,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "creating": True,
         "editing": True,
     }
@@ -18490,10 +18504,14 @@ def sliceacceleration_create(request, sequencespecific_id, template_name="experi
 @login_required
 @permission_required("experiment.change_sliceacceleration")
 def sliceacceleration_view(
-        request, sequencespecific_id, template_name="experiment/sliceacceleration_register.html"
+        request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_sliceacceleration_register.html"
 ):
     sliceacceleration_ = get_object_or_404(SliceAcceleration, pk=sequencespecific_id)
     sliceacceleration_form = SliceAccelerationForm(request.POST or None, instance=sliceacceleration_)
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
 
     for field in sliceacceleration_form.fields:
         sliceacceleration_form.fields[field].widget.attrs["disabled"] = True
@@ -18504,12 +18522,15 @@ def sliceacceleration_view(
 
             messages.success(request, _("Slice Acceleration setting was removed successfully."))
 
-            redirect_url = reverse("sliceacceleration_view", args=(sequencespecific_id, ))
+            redirect_url = reverse("mri_setting_sequencespecific_view", args=(mri_setting_id,sequencespecific_id,))
             return HttpResponseRedirect(redirect_url)
 
     context = {
         "sliceacceleration_form": sliceacceleration_form,
         "sliceacceleration": sliceacceleration_,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "editing": False,
     }
 
@@ -18519,9 +18540,13 @@ def sliceacceleration_view(
 @login_required
 @permission_required("experiment.change_sliceacceleration")
 def sliceacceleration_update(
-        request, sequencespecific_id, template_name="experiment/sliceacceleration_register.html"
+        request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_sliceacceleration_register.html"
 ):
     sliceacceleration = get_object_or_404(SliceAcceleration, pk=sequencespecific_id)
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
 
     sliceacceleration_form = SliceAccelerationForm(request.POST or None, instance=sliceacceleration)
 
@@ -18535,12 +18560,15 @@ def sliceacceleration_update(
                 else:
                     messages.success(request, _("There is no changes to save."))
 
-                redirect_url = reverse("sliceacceleration_view", args=(sequencespecific_id,))
+                redirect_url = reverse("sliceacceleration_view", args=(mri_setting_id, sequencespecific_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "sliceacceleration": sliceacceleration,
         "sliceacceleration_form": sliceacceleration_form,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "editing": True,
     }
 

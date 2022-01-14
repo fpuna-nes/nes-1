@@ -331,15 +331,15 @@
                         <tr>
                             <td>{% trans "Slice Acceleration" %}</td>
                             <td>
-                                {% if mri_setting.eeg_solution_setting %}
+                                {% if sliceacceleration_obj %}
 
-                                    <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
-                                        {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
+                                    <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/sliceacceleration/view/">
+                                        {% trans "Slice Acceleration" %}
                                     </a>
 
                                 {% else %}
                                     {% if can_change %}
-                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/sliceacceleration/new/"> {% trans "+ Add setting" %}</a>
                                     {% endif %}
                                 {% endif %}
                             </td>
