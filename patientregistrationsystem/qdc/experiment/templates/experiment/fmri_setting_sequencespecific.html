@@ -211,7 +211,7 @@
                 </div>
             </div>
 
-            {% if not editing %}
+            {% if not editing and not creating %}
 
             <div class="container span6 offset3 well ">
                 <h4><span class="glyphicon glyphicon-cog"></span> {% trans "Settings:" %}</h4>
@@ -248,16 +248,16 @@
                         <tr>
                             <td>{% trans "Spoiling Details" %}</td>
                             <td>
-                                {{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}
-                                {% if not sequencespecific_obj %}
-
-                                    <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/spoilingsetting/new/">
-                                        {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
+                                
+                                {% if spoilingsetting_obj %}
+                                    
+                                    <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/spoilingsetting/view">
+                                        {% trans "Spoiling Setting" %}
                                     </a>
-
+                                    
                                 {% else %}
                                     {% if can_change %}
-                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/spoilingsetting/new"> {% trans "+ Add setting" %}</a>
+                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/spoilingsetting/new"> {% trans "+ Add Spoiling Setting" %}</a>
                                     {% endif %}
                                 {% endif %}
                             </td>
