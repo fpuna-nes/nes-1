@@ -16949,7 +16949,7 @@ def parallelimaging_update(
     return render(request, template_name, context)
 # end CRUD ParallelImaging
 
-# CRUD MRI_SPOILING_SETTING
+# CRUD SPOILINGSETTING
 @login_required
 @permission_required("experiment.register_equipment")
 def spoiling_setting_list(request, template_name="experiment/mri_spoiling_setting_list.html"):
@@ -17987,6 +17987,12 @@ def mri_setting_sequencespecific_view(
     except SpoilingSetting.DoesNotExist:
         spoilingsetting_obj = None
 
+    timingparameter_obj = None
+    try:
+        timingparameter_obj = TimingParameters.objects.get(sequence_specific=sequencespecific_id)
+    except TimingParameters.DoesNotExist:
+        timingparameter_obj = None
+
     can_change = get_can_change(
         request.user, mri_setting.experiment.research_project
     )
@@ -18029,6 +18035,7 @@ def mri_setting_sequencespecific_view(
         "mrimachine_form":mrimachine_form,
         "sequencespecific_obj":sequencespecific_obj,
         "spoilingsetting_obj": spoilingsetting_obj,
+        "timingparameter_obj": timingparameter_obj,
         # "emg_electrode_setting": emg_electrode_setting,
         # "emg_amplifier_setting_form": emg_amplifier_setting_form,
         # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
@@ -18234,7 +18241,7 @@ def frmi_machine_update(
 # CRUD TimingParameters
 @login_required
 @permission_required("experiment.add_timingparameters")
-def timingparameter_create(request, sequencespecific_id, template_name="experiment/timingparameters_register.html"):
+def timingparameter_create(request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_timingparameters_register.html"):
     timingparameter_form = TimingParametersForm(request.POST or None)
 
     if request.method == "POST":
@@ -18248,7 +18255,7 @@ def timingparameter_create(request, sequencespecific_id, template_name="experime
                 messages.success(request, _("Timing Parameters included successfully."))
 
                 redirect_url = reverse(
-                    "timingparameter_view", args=(sequence_specific.id,)
+                    "timingparameter_view", args=( mri_setting_id, sequence_specific.id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 
@@ -18263,12 +18270,13 @@ def timingparameter_create(request, sequencespecific_id, template_name="experime
 
 @login_required
 @permission_required("experiment.change_timingparameters")
-def timingparameter_view(
-        request, sequencespecific_id, template_name="experiment/timingparameters_register.html"
-):
+def timingparameter_view(request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_timingparameters_register.html"):
     timingparameter_ = get_object_or_404(TimingParameters, pk=sequencespecific_id)
     timingparameter_form = TimingParametersForm(request.POST or None, instance=timingparameter_)
-
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
     for field in timingparameter_form.fields:
         timingparameter_form.fields[field].widget.attrs["disabled"] = True
 
@@ -18276,26 +18284,32 @@ def timingparameter_view(
         if request.POST["action"] == "remove":
             timingparameter_.delete()
 
-            messages.success(request, _("Pulse Sequence setting was removed successfully."))
+            messages.success(request, _("Timing Parameter was removed successfully."))
 
-            redirect_url = reverse("timingparameter_view", args=(sequencespecific_id, ))
+            redirect_url = reverse("mri_setting_sequencespecific_view", args=(mri_setting_id,sequencespecific_id,))
             return HttpResponseRedirect(redirect_url)
 
     context = {
         "timingparameter_form": timingparameter_form,
         "timingparameter": timingparameter_,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "editing": False,
     }
-
     return render(request, template_name, context)
 
 
 @login_required
 @permission_required("experiment.change_timingparameters")
-def timingparameter_update(
-        request, sequencespecific_id, template_name="experiment/timingparameters_register.html"
+def timingparameter_edit(
+        request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_timingparameters_register.html"
 ):
     timingparameters = get_object_or_404(TimingParameters, pk=sequencespecific_id)
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
 
     timingparameter_form = TimingParametersForm(request.POST or None, instance=timingparameters)
 
@@ -18305,16 +18319,19 @@ def timingparameter_update(
 
                 if timingparameter_form.has_changed():
                     timingparameter_form.save()
-                    messages.success(request, _("Pulse Sequence updated successfully."))
+                    messages.success(request, _("Timing parameter updated successfully."))
                 else:
                     messages.success(request, _("There is no changes to save."))
 
-                redirect_url = reverse("timingparameter_view", args=(sequencespecific_id,))
+                redirect_url = reverse("timingparameter_view", args=(mri_setting_id,sequencespecific_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "timingparameter": timingparameters,
         "timingparameter_form": timingparameter_form,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
         "editing": True,
     }
 

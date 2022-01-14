@@ -261,35 +261,21 @@
                                     {% endif %}
                                 {% endif %}
                             </td>
-                            <td>
-                                {% if eeg_setting.eeg_solution_setting and can_change %}
-                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="right" title="{% trans "Delete setting from list" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                       onclick="show_modal_remove_equipment('eeg_solution');"></a>
-                                {% endif %}
-                            </td>
-                        
-                                <td>
-                                    {% if mri_setting.frmi_amplifier_setting and can_change %}
-                                    <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip"
-                                        data-placement="right" title="{% trans " Delete setting from list" %}"
-                                        style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                        onclick="show_modal_remove_equipment('frmi_amplifier');"></a>
-                                    {% endif %}
-                                </td>
                         </tr>
                         
                         <tr>
                             <td>{% trans "Timing Parameters" %}</td>
                             <td>
-                                {% if mri_setting.eeg_solution_setting %}
+                               
+                                {% if timingparameter_obj %}
 
-                                    <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
-                                        {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
+                                    <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/timingparameters/view">
+                                        {% trans "Timing Parameter" %}
                                     </a>
 
                                 {% else %}
                                     {% if can_change %}
-                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/timingparameters/new/"> {% trans "+ Add setting" %}</a>
                                     {% endif %}
                                 {% endif %}
                             </td>

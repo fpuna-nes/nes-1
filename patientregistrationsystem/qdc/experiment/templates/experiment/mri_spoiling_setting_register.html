@@ -51,7 +51,7 @@
                     <li><a href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}">{{ sequencespecific_obj.sequence_name }}</a></li>
                     
                     {% if creating %}
-                    <li class="active">{% trans "New MRI Spoiling Setting" %}</li>
+                        <li class="active">{% trans "New MRI Spoiling Setting" %}</li>
                     {% else %}
                     {% if editing %}
                     <li><a href="/experiment/mri_spoiling_setting/{{ spoiling_setting.id }}">{{ spoiling_setting_form.value }}</a>

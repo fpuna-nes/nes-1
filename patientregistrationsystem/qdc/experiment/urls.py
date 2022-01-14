@@ -1097,29 +1097,29 @@ urlpatterns = [
         views.mri_machine_create,
         name="mri_machine_create",
     ),
-        url(
+    url(
         r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)$",
         views.frmi_machine_view,
         name="frmi_machine_view",
     ),
-         url(
+    url(
         r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)/edit$",
         views.frmi_machine_update,
         name="frmi_machine_update",
     ),
-
     # register TimingParameters
-    url(r"^sequencespecific/(?P<sequencespecific_id>\d+)/timingparameters/new/$",
-        views.timingparameter_create,
-        name="timingparameter_new"),
     url(
-        r"^sequencespecific/(?P<sequencespecific_id>\d+)/timingparameters/$",
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/timingparameters/new/$",
+        views.timingparameter_create,
+        name="timingparameter_create"),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/timingparameters/view/$",
         views.timingparameter_view,
         name="timingparameter_view",
     ),
     url(
-        r"^sequencespecific/(?P<sequencespecific_id>\d+)/timingparameters/edit/$",
-        views.timingparameter_update,
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/timingparameters/edit/$",
+        views.timingparameter_edit,
         name="timingparameter_edit",
     ),
     # register RF Contrast
