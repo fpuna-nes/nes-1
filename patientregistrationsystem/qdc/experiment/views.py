@@ -152,6 +152,8 @@ from .models import (
     FMRIMachineSettings,
     TimingParameters,
     SequenceSpecific,
+    RFContrast,
+    SliceAcceleration,
 )
 
 from .forms import (
@@ -239,6 +241,8 @@ from .forms import (
     SequenceSpecificForm,
     FMRIMachineSettingsForm,
     TimingParametersForm,
+    RFContrastForm,
+    SliceAccelerationForm,
 )
 
 from .portal import (
@@ -18239,30 +18243,12 @@ def timingparameter_create(request, sequencespecific_id, template_name="experime
                 timingparameter_added = timingparameter_form.save(commit=False)
                 sequence_specific = SequenceSpecific.objects.get(id=sequencespecific_id)
                 timingparameter_added.sequence_specific = sequence_specific
-                # sequence_specific.__class__ = TimingParameters
-                #
-                # sequence_specific.echo_time = timingparameters_added.echo_time
-                # sequence_specific.inversion_time = timingparameters_added.inversion_time
-                # sequence_specific.slice_timing = timingparameters_added.slice_timing
-                # sequence_specific.slice_encoding_direction = timingparameters_added.slice_encoding_direction
-                # sequence_specific.dwell_time = timingparameters_added.dwell_time
-                #
-                # sequence_specific.save(
-                #     update_fields=[
-                #         'id',
-                #         'echo_time',
-                #         'inversion_time',
-                #         'slice_timing',
-                #         'slice_encoding_direction',
-                #         'dwell_time',
-                #     ]
-                # )
                 timingparameter_added.save()
 
                 messages.success(request, _("Timing Parameters included successfully."))
 
                 redirect_url = reverse(
-                    "timingparameters_view", args=(sequence_specific.id,)
+                    "timingparameter_view", args=(sequence_specific.id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 
@@ -18292,7 +18278,7 @@ def timingparameter_view(
 
             messages.success(request, _("Pulse Sequence setting was removed successfully."))
 
-            redirect_url = reverse("timingparameter_list", args=())
+            redirect_url = reverse("timingparameter_view", args=(sequencespecific_id, ))
             return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -18323,7 +18309,7 @@ def timingparameter_update(
                 else:
                     messages.success(request, _("There is no changes to save."))
 
-                redirect_url = reverse("timingparameters_view", args=(sequencespecific_id,))
+                redirect_url = reverse("timingparameter_view", args=(sequencespecific_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -18334,3 +18320,185 @@ def timingparameter_update(
 
     return render(request, template_name, context)
 # end CRUD TimingParameters
+
+
+# CRUD RF Contrast
+@login_required
+@permission_required("experiment.add_rfcontrast")
+def rfcontrast_create(request, sequencespecific_id, template_name="experiment/rfcontrast_register.html"):
+    rfcontrast_form = RFContrastForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if rfcontrast_form.is_valid():
+                rfcontrast_added = rfcontrast_form.save(commit=False)
+                sequence_specific = SequenceSpecific.objects.get(id=sequencespecific_id)
+                rfcontrast_added.sequence_specific = sequence_specific
+                rfcontrast_added.save()
+
+                messages.success(request, _("RF Contrast included successfully."))
+
+                redirect_url = reverse(
+                    "rfcontrast_view", args=(sequence_specific.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "rfcontrast_form": rfcontrast_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_rfcontrast")
+def rfcontrast_view(
+        request, sequencespecific_id, template_name="experiment/rfcontrast_register.html"
+):
+    rfcontrast_ = get_object_or_404(RFContrast, pk=sequencespecific_id)
+    rfcontrast_form = RFContrastForm(request.POST or None, instance=rfcontrast_)
+
+    for field in rfcontrast_form.fields:
+        rfcontrast_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+            rfcontrast_.delete()
+
+            messages.success(request, _("RF Contrast setting was removed successfully."))
+
+            redirect_url = reverse("rfcontrast_view", args=(sequencespecific_id, ))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "rfcontrast_form": rfcontrast_form,
+        "rfcontrast": rfcontrast_,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_rfcontrast")
+def rfcontrast_update(
+        request, sequencespecific_id, template_name="experiment/rfcontrast_register.html"
+):
+    rfcontrast = get_object_or_404(RFContrast, pk=sequencespecific_id)
+
+    rfcontrast_form = RFContrastForm(request.POST or None, instance=rfcontrast)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if rfcontrast_form.is_valid():
+
+                if rfcontrast_form.has_changed():
+                    rfcontrast_form.save()
+                    messages.success(request, _("RF Contrast updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("rfcontrast_view", args=(sequencespecific_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "rfcontrast": rfcontrast,
+        "rfcontrast_form": rfcontrast_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD RFContrast
+
+
+# CRUD Slice Acceleration
+@login_required
+@permission_required("experiment.add_sliceacceleration")
+def sliceacceleration_create(request, sequencespecific_id, template_name="experiment/sliceacceleration_register.html"):
+    sliceacceleration_form = SliceAccelerationForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if sliceacceleration_form.is_valid():
+                sliceacceleration_added = sliceacceleration_form.save(commit=False)
+                sequence_specific = SequenceSpecific.objects.get(id=sequencespecific_id)
+                sliceacceleration_added.sequence_specific = sequence_specific
+                sliceacceleration_added.save()
+
+                messages.success(request, _("Slice Acceleration included successfully."))
+
+                redirect_url = reverse(
+                    "sliceacceleration_view", args=(sequence_specific.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "sliceacceleration_form": sliceacceleration_form,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_sliceacceleration")
+def sliceacceleration_view(
+        request, sequencespecific_id, template_name="experiment/sliceacceleration_register.html"
+):
+    sliceacceleration_ = get_object_or_404(SliceAcceleration, pk=sequencespecific_id)
+    sliceacceleration_form = SliceAccelerationForm(request.POST or None, instance=sliceacceleration_)
+
+    for field in sliceacceleration_form.fields:
+        sliceacceleration_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+            sliceacceleration_.delete()
+
+            messages.success(request, _("Slice Acceleration setting was removed successfully."))
+
+            redirect_url = reverse("sliceacceleration_view", args=(sequencespecific_id, ))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "sliceacceleration_form": sliceacceleration_form,
+        "sliceacceleration": sliceacceleration_,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_sliceacceleration")
+def sliceacceleration_update(
+        request, sequencespecific_id, template_name="experiment/sliceacceleration_register.html"
+):
+    sliceacceleration = get_object_or_404(SliceAcceleration, pk=sequencespecific_id)
+
+    sliceacceleration_form = SliceAccelerationForm(request.POST or None, instance=sliceacceleration)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if sliceacceleration_form.is_valid():
+
+                if sliceacceleration_form.has_changed():
+                    sliceacceleration_form.save()
+                    messages.success(request, _("Slice Acceleration updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("sliceacceleration_view", args=(sequencespecific_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "sliceacceleration": sliceacceleration,
+        "sliceacceleration_form": sliceacceleration_form,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD SliceAcceleration

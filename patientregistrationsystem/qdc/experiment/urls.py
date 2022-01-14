@@ -1122,6 +1122,35 @@ urlpatterns = [
         views.timingparameter_update,
         name="timingparameter_edit",
     ),
+    # register RF Contrast
+    url(r"^sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/new/$",
+        views.rfcontrast_create,
+        name="rfcontrast_new"),
+    url(
+        r"^sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/$",
+        views.rfcontrast_view,
+        name="rfcontrast_view",
+    ),
+    url(
+        r"^sequencespecific/(?P<sequencespecific_id>\d+)/rfcontrast/edit/$",
+        views.rfcontrast_update,
+        name="rfcontrast_edit",
+    ),
+
+    # register Slice Acceleration
+    url(r"^sequencespecific/(?P<sequencespecific_id>\d+)/sliceacceleration/new/$",
+        views.sliceacceleration_create,
+        name="sliceacceleration_new"),
+    url(
+        r"^sequencespecific/(?P<sequencespecific_id>\d+)/sliceacceleration/$",
+        views.sliceacceleration_view,
+        name="sliceacceleration_view",
+    ),
+    url(
+        r"^sequencespecific/(?P<sequencespecific_id>\d+)/sliceacceleration/edit/$",
+        views.sliceacceleration_update,
+        name="sliceacceleration_edit",
+    ),
     # ADD MRI SPOILING SETTING
     url(
         r"^mriscannersetting/machinesetting/list/$",
@@ -1143,6 +1172,7 @@ urlpatterns = [
         views.spoiling_setting_update,
         name="spoiling_setting_edit",
     ),
+
     # url(
     #    r"^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$",
     #    views.questionnaire_view,
