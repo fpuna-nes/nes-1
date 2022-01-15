@@ -363,15 +363,15 @@
                         <tr>
                             <td>{% trans "In-Plane Spatial Encoding" %}</td>
                             <td>
-                                {% if mri_setting.eeg_solution_setting %}
+                                {% if inplanespatialencoding_obj %}
 
-                                    <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution">
-                                        {{ eeg_setting.eeg_solution_setting.eeg_solution.name }}
+                                    <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/inplanespatialencoding/view/">
+                                        {% trans "In Plane Spatial Encoding" %}
                                     </a>
 
                                 {% else %}
                                     {% if can_change %}
-                                        <a role="menuitem" tabindex="-1" href="/experiment/eeg_setting/{{ eeg_setting.id }}/eeg_solution"> {% trans "+ Add setting" %}</a>
+                                        <a role="menuitem" tabindex="-1" href="/experiment/mri_setting/{{ mri_setting.id }}/sequencespecific/{{ sequencespecific_obj.id }}/inplanespatialencoding/new/"> {% trans "+ Add setting" %}</a>
                                     {% endif %}
                                 {% endif %}
                             </td>

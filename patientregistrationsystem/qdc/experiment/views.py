@@ -154,6 +154,7 @@ from .models import (
     SequenceSpecific,
     RFContrast,
     SliceAcceleration,
+    InPlaneSpatialEncoding,
 )
 
 from .forms import (
@@ -243,6 +244,7 @@ from .forms import (
     TimingParametersForm,
     RFContrastForm,
     SliceAccelerationForm,
+    InPlaneSpatialEncodingForm,
 )
 
 from .portal import (
@@ -18003,6 +18005,12 @@ def mri_setting_sequencespecific_view(
     except SliceAcceleration.DoesNotExist:
         sliceacceleration_obj = None
 
+    inplanespatialencoding_obj = None
+    try:
+        inplanespatialencoding_obj = InPlaneSpatialEncoding.objects.get(sequence_specific=sequencespecific_id)
+    except InPlaneSpatialEncoding.DoesNotExist:
+        inplanespatialencoding_obj = None
+
     can_change = get_can_change(
         request.user, mri_setting.experiment.research_project
     )
@@ -18048,6 +18056,7 @@ def mri_setting_sequencespecific_view(
         "timingparameter_obj": timingparameter_obj,
         "rfcontrast_obj": rfcontrast_obj,
         "sliceacceleration_obj": sliceacceleration_obj,
+        "inplanespatialencoding_obj": inplanespatialencoding_obj,
         # "emg_electrode_setting": emg_electrode_setting,
         # "emg_amplifier_setting_form": emg_amplifier_setting_form,
         # "emg_analog_filter_setting_form": emg_analog_filter_setting_form,
@@ -18574,3 +18583,122 @@ def sliceacceleration_update(
 
     return render(request, template_name, context)
 # end CRUD SliceAcceleration
+
+# CRUD InPlaneSpatialEncoding
+@login_required
+@permission_required("experiment.add_inplanespatialencoding")
+def inplanespatialencoding_create(request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_inplanespatialencoding_register.html"):
+    inplanespatialencoding_form = InPlaneSpatialEncodingForm(request.POST or None)    
+    list_of_parallelimaging = ParallelImaging.objects.all().distinct()
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if inplanespatialencoding_form.is_valid():
+                inplanespatialencoding_added = inplanespatialencoding_form.save(commit=False)
+                sequence_specific = SequenceSpecific.objects.get(id=sequencespecific_id)
+                inplanespatialencoding_added.sequence_specific = sequence_specific
+                inplanespatialencoding_added.save()
+
+                messages.success(request, _("In Plane Spatial Encoding included successfully."))
+
+                redirect_url = reverse(
+                    "inplanespatialencoding_view", args=(mri_setting_id, sequence_specific.id,)
+                )
+                return HttpResponseRedirect(redirect_url)
+            else:
+                messages.warning(request, _("Verifique datos cargados"))
+
+    context = {
+        "inplanespatialencoding_form": inplanespatialencoding_form,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
+        "list_of_parallelimaging": list_of_parallelimaging,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_inplanespatialencoding")
+def inplanespatialencoding_view(
+        request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_inplanespatialencoding_register.html"
+):
+    inplanespatialencoding_ = get_object_or_404(InPlaneSpatialEncoding, pk=sequencespecific_id)
+    inplanespatialencoding_form = InPlaneSpatialEncodingForm(request.POST or None, instance=inplanespatialencoding_)
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
+    list_of_parallelimaging = ParallelImaging.objects.all().distinct()
+
+    for field in inplanespatialencoding_form.fields:
+        inplanespatialencoding_form.fields[field].widget.attrs["disabled"] = True
+
+    if request.method == "POST":
+        if request.POST["action"] == "remove":
+            inplanespatialencoding_.delete()
+
+            messages.success(request, _("In Plane Spatial Encoding setting was removed successfully."))
+
+            redirect_url = reverse("mri_setting_sequencespecific_view", args=(mri_setting_id,sequencespecific_id,))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "inplanespatialencoding_form": inplanespatialencoding_form,
+        "inplanespatialencoding": inplanespatialencoding_,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
+        "list_of_parallelimaging": list_of_parallelimaging,
+        "editing": False,
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required("experiment.change_inplanespatialencoding")
+def inplanespatialencoding_update(
+        request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_inplanespatialencoding_register.html"
+):
+    inplanespatialencoding = get_object_or_404(InPlaneSpatialEncoding, pk=sequencespecific_id)
+    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    sequencespecific_obj = get_object_or_404(
+        SequenceSpecific, pk=sequencespecific_id
+    )
+    list_of_parallelimaging = ParallelImaging.objects.all().distinct()
+
+    inplanespatialencoding_form = InPlaneSpatialEncodingForm(request.POST or None, instance=inplanespatialencoding)
+
+    if request.method == "POST":
+        if request.POST["action"] == "save":
+            if inplanespatialencoding_form.is_valid():
+
+                if inplanespatialencoding_form.has_changed():
+                    inplanespatialencoding_form.save()
+                    messages.success(request, _("In Plane Spatial Encoding updated successfully."))
+                else:
+                    messages.success(request, _("There is no changes to save."))
+
+                redirect_url = reverse("inplanespatialencoding_view", args=(mri_setting_id, sequencespecific_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "inplanespatialencoding": inplanespatialencoding,
+        "inplanespatialencoding_form": inplanespatialencoding_form,
+        "mri_setting": mri_setting,
+        "sequencespecific_id": sequencespecific_id,
+        "sequencespecific_obj": sequencespecific_obj,
+        "list_of_parallelimaging": list_of_parallelimaging,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+# end CRUD InPlaneSpatialEncoding

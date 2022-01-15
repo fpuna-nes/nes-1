@@ -1136,7 +1136,6 @@ urlpatterns = [
         views.rfcontrast_update,
         name="rfcontrast_edit",
     ),
-
     # register Slice Acceleration
     url(r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/sliceacceleration/new/$",
         views.sliceacceleration_create,
@@ -1150,6 +1149,20 @@ urlpatterns = [
         r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/sliceacceleration/edit/$",
         views.sliceacceleration_update,
         name="sliceacceleration_edit",
+    ),
+    # register InPlane Spatial Encoding
+    url(r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/inplanespatialencoding/new/$",
+        views.inplanespatialencoding_create,
+        name="inplanespatialencoding_new"),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/inplanespatialencoding/view/$",
+        views.inplanespatialencoding_view,
+        name="inplanespatialencoding_view",
+    ),
+    url(
+        r"^mri_setting/(?P<mri_setting_id>\d+)/sequencespecific/(?P<sequencespecific_id>\d+)/inplanespatialencoding/edit/$",
+        views.inplanespatialencoding_update,
+        name="inplanespatialencoding_edit",
     ),
     # ADD MRI SPOILING SETTING
     url(
