@@ -18282,6 +18282,8 @@ def timingparameter_create(request, mri_setting_id, sequencespecific_id, templat
 
     context = {
         "timingparameter_form": timingparameter_form,
+        "mri_setting_id": mri_setting_id,
+        "sequencespecific_id": sequencespecific_id,
         "creating": True,
         "editing": True,
     }
