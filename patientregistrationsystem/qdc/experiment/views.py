@@ -6,11 +6,11 @@ import random
 import tempfile
 import logging
 import numpy as np
+import pydicom
 
 import nwb
 
 import pydot
-import httplib2
 from django.core.mail import send_mail
 
 from nwb.nwbco import *
@@ -11621,28 +11621,33 @@ def subject_additional_data_create(
                     logger.debug(idFormatoValor)
                     for elemento in idFormatoValor:
                         if elemento == 5:  # es un dato fmri
-                            dato_orthanc = additional_data_file.file
-                            dato_orthanc = dato_orthanc.read()
-                            httpreq = httplib2.Http()
-                            httpreq.add_credentials("orthanc", "orthanc")
-                            (resp, content) = httpreq.request(
-                                "http://172.18.0.3:8042/instances",
-                                "POST",
-                                body=dato_orthanc,
-                                headers={"content-type": "application/octet-stream"},
-                            )
-                            logger.debug(resp)
-                            respuesta = json.loads(content)
-                            logger.debug(respuesta)
-                            if (
-                                respuesta["Status"] == "Success"
-                                or respuesta["Status"] == "AlreadyStored"
-                            ):
-                                additional_data_file.idorthanc = respuesta["ID"]
-                                additional_data_file.save()
-                                messages.success(request, _("Guardado exitosamente."))
-                            else:
-                                messages.error(request, _("Error de orthanc"))
+                            archivo = additional_data_file.file
+                            ds = pydicom.dcmread(archivo)
+                            json_file = ds.to_json_dict()
+
+                            print(archivo)
+
+                            # httpreq = httplib2.Http()
+                            #
+                            # httpreq.add_credentials("orthanc", "orthanc")
+                            # (resp, content) = httpreq.request(
+                            #     "http://172.18.0.3:8042/instances",
+                            #     "POST",
+                            #     body=dato_orthanc,
+                            #     headers={"content-type": "application/octet-stream"},
+                            # )
+                            # logger.debug(resp)
+                            # respuesta = json.loads(content)
+                            # logger.debug(respuesta)
+                            # if (
+                            #     respuesta["Status"] == "Success"
+                            #     or respuesta["Status"] == "AlreadyStored"
+                            # ):
+                            #     additional_data_file.idorthanc = respuesta["ID"]
+                            #     additional_data_file.save()
+                            #     messages.success(request, _("Guardado exitosamente."))
+                            # else:
+                            #     messages.error(request, _("Error de orthanc"))
 
                 messages.success(
                     request, _("Additional data collection created successfully.")
