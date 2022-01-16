@@ -1015,7 +1015,7 @@ class Component(models.Model):
     EEG = "eeg"
     EMG = "emg"
     TMS = "tms"
-    FRMI = "frmi"
+    FMRI = "fmri"
     DIGITAL_GAME_PHASE = "digital_game_phase"
     GENERIC_DATA_COLLECTION = "generic_data_collection"
     COMPONENT_TYPES = (
@@ -1029,7 +1029,7 @@ class Component(models.Model):
         (EEG, _("EEG")),
         (EMG, _("EMG")),
         (TMS, _("TMS")),
-        (FRMI, _("FMRI")),
+        (FMRI, _("FMRI")),
         (DIGITAL_GAME_PHASE, _("Goalkeeper game phase")),
         (GENERIC_DATA_COLLECTION, _("Generic data collection")),
     )
@@ -1820,7 +1820,7 @@ class PortalSelectedQuestion(models.Model):
         unique_together = ("experiment", "survey", "question_code")
 
 
-# FRMI Section Setup Added
+# FMRI Section Setup Added
 class MRIScanner(Equipment):
     manufacturer_model_name = models.CharField(max_length=255, null=True, blank=True)
     software_version = models.CharField(max_length=40, null=True, blank=True)
@@ -1845,11 +1845,11 @@ class ParallelImaging(models.Model):
     description = models.TextField(null=False, blank=False)
 
 
-def get_frmi_settings_dir(instance, filename):
-    return "frmi_settings/%s/%s" % (instance.id, filename)
+def get_fmri_settings_dir(instance, filename):
+    return "fmri_settings/%s/%s" % (instance.id, filename)
 
 
-# FRMI Section Added
+# FMRI Section Added
 class FMRIMachineSettings(models.Model):
     mri_machine = models.ForeignKey(MRIScanner)
     station_name = models.CharField(max_length=255)
@@ -1858,7 +1858,7 @@ class FMRIMachineSettings(models.Model):
         return self.station_name
 
 
-class FRMISetting(models.Model):
+class FMRISetting(models.Model):
     experiment = models.ForeignKey(Experiment)
     name = models.CharField(max_length=150)
     description = models.TextField()
@@ -1880,7 +1880,7 @@ class PulseSequence(models.Model):
 
 # 1 to 1 Relations from here
 class SequenceSpecific(models.Model):
-    fmri_settings = models.ForeignKey(FRMISetting, null=True, blank=True)
+    fmri_settings = models.ForeignKey(FMRISetting, null=True, blank=True)
     pulse_sequence_type = models.ForeignKey(PulseSequence, null=True, blank=True)
     mt_pulse_shape = models.ForeignKey(PulseShape, null=True, blank=True)
     scanning_sequence = models.CharField(max_length=255, null=True, blank=True)
@@ -1966,8 +1966,8 @@ class TimingParameters(models.Model):
 
 
 # Dummy class until final version is defined
-class FRMI(Component):
-    frmi_setting = models.ForeignKey(FRMISetting)
+class FMRI(Component):
+    fmri_setting = models.ForeignKey(FMRISetting)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)

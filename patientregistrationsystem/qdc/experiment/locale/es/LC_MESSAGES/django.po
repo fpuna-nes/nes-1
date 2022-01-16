@@ -101,8 +101,8 @@ msgid "EEG setting type must be filled."
 msgstr "El tipo de configuración de EEG debe ser ingresada."
 
 #: experiment/forms.py:369 experiment/forms.py:2986
-msgid "FRMI setting type must be filled."
-msgstr "El tipo de configuración de FRMI debe ser ingresada."
+msgid "FMRI setting type must be filled."
+msgstr "El tipo de configuración de FMRI debe ser ingresada."
 
 #: experiment/forms.py:393 experiment/forms.py:1490
 msgid "EMG setting type must be filled."
@@ -414,7 +414,7 @@ msgstr "Solución de EEG"
 
 #: experiment/models.py:162
 #: experiment/templates/experiment/eeg_setting_register.html:162
-#: experiment/templates/experiment/frmi_setting_register.html:200
+#: experiment/templates/experiment/fmri_setting_register.html:200
 msgid "Filter"
 msgstr "Filtro"
 
@@ -576,7 +576,7 @@ msgid "TMS"
 msgstr "TMS"
 
 #: experiment/models.py:1032
-msgid "FRMI"
+msgid "FMRI"
 msgstr ""
 
 #: experiment/models.py:1033
@@ -672,8 +672,8 @@ msgstr "error al enviar"
 #: experiment/templates/experiment/experiment_schedule_of_sending.html:40
 #: experiment/templates/experiment/filtertype_list.html:34
 #: experiment/templates/experiment/filtertype_register.html:47
-#: experiment/templates/experiment/frmi_setting_register.html:47
-#: experiment/templates/experiment/frmi_solution_register.html:47
+#: experiment/templates/experiment/fmri_setting_register.html:47
+#: experiment/templates/experiment/fmri_solution_register.html:47
 #: experiment/templates/experiment/group_goalkeeper_game_data.html:18
 #: experiment/templates/experiment/group_register.html:51
 #: experiment/templates/experiment/import_log.html:34
@@ -761,7 +761,7 @@ msgstr "Início"
 #: experiment/templates/experiment/emg_placement_register_template.html:48
 #: experiment/templates/experiment/filtertype_list.html:35
 #: experiment/templates/experiment/filtertype_register.html:48
-#: experiment/templates/experiment/frmi_solution_register.html:48
+#: experiment/templates/experiment/fmri_solution_register.html:48
 #: experiment/templates/experiment/manufacturer_list.html:35
 #: experiment/templates/experiment/manufacturer_register.html:48
 #: experiment/templates/experiment/material_list.html:35
@@ -842,7 +842,7 @@ msgstr "Identificación"
 #: experiment/templates/experiment/eegsolution_register.html:90
 #: experiment/templates/experiment/emg_electrode_setting_amplifier.html:78
 #: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:77
-#: experiment/templates/experiment/frmi_solution_register.html:90
+#: experiment/templates/experiment/fmri_solution_register.html:90
 #: experiment/templates/experiment/manufacturer_list.html:36
 #: experiment/templates/experiment/manufacturer_register.html:49
 #: experiment/templates/experiment/manufacturer_register.html:68
@@ -977,8 +977,8 @@ msgstr "Insertar nuevo"
 #: experiment/templates/experiment/experiment_register.html:535
 #: experiment/templates/experiment/filtertype_list.html:82
 #: experiment/templates/experiment/filtertype_register.html:141
-#: experiment/templates/experiment/frmi_setting_register.html:320
-#: experiment/templates/experiment/frmi_solution_register.html:124
+#: experiment/templates/experiment/fmri_setting_register.html:320
+#: experiment/templates/experiment/fmri_solution_register.html:124
 #: experiment/templates/experiment/group_goalkeeper_game_data.html:205
 #: experiment/templates/experiment/group_register.html:353
 #: experiment/templates/experiment/manufacturer_list.html:78
@@ -1045,7 +1045,7 @@ msgstr "Volver"
 #: experiment/templates/experiment/eegsolution_register.html:52
 #: experiment/templates/experiment/electrodemodel_register.html:52
 #: experiment/templates/experiment/filtertype_register.html:52
-#: experiment/templates/experiment/frmi_solution_register.html:52
+#: experiment/templates/experiment/fmri_solution_register.html:52
 #: experiment/templates/experiment/manufacturer_register.html:52
 #: experiment/templates/experiment/material_register.html:52
 #: experiment/templates/experiment/mriscanner_register.html:53
@@ -1089,8 +1089,8 @@ msgstr "Nuevo"
 #: experiment/templates/experiment/emg_setting_register.html:57
 #: experiment/templates/experiment/experiment_register.html:55
 #: experiment/templates/experiment/filtertype_register.html:56
-#: experiment/templates/experiment/frmi_setting_register.html:58
-#: experiment/templates/experiment/frmi_solution_register.html:56
+#: experiment/templates/experiment/fmri_setting_register.html:58
+#: experiment/templates/experiment/fmri_solution_register.html:56
 #: experiment/templates/experiment/group_register.html:61
 #: experiment/templates/experiment/manufacturer_register.html:56
 #: experiment/templates/experiment/material_register.html:56
@@ -1151,7 +1151,7 @@ msgstr "Edición"
 #: experiment/templates/experiment/experiment_register.html:476
 #: experiment/templates/experiment/filtertype_list.html:50
 #: experiment/templates/experiment/filtertype_register.html:81
-#: experiment/templates/experiment/frmi_setting_register.html:82
+#: experiment/templates/experiment/fmri_setting_register.html:82
 #: experiment/templates/experiment/group_register.html:86
 #: experiment/templates/experiment/group_register.html:126
 #: experiment/templates/experiment/group_register.html:265
@@ -1237,8 +1237,8 @@ msgstr "Relación señal-ruido (dB)"
 #: experiment/templates/experiment/experiment_register.html:450
 #: experiment/templates/experiment/experiment_register.html:483
 #: experiment/templates/experiment/filtertype_register.html:118
-#: experiment/templates/experiment/frmi_setting_register.html:119
-#: experiment/templates/experiment/frmi_solution_register.html:99
+#: experiment/templates/experiment/fmri_setting_register.html:119
+#: experiment/templates/experiment/fmri_solution_register.html:99
 #: experiment/templates/experiment/group_register.html:95
 #: experiment/templates/experiment/group_register.html:199
 #: experiment/templates/experiment/group_register.html:271
@@ -1326,10 +1326,10 @@ msgstr "Editar"
 #: experiment/templates/experiment/experiment_register.html:568
 #: experiment/templates/experiment/filtertype_register.html:128
 #: experiment/templates/experiment/filtertype_register.html:157
-#: experiment/templates/experiment/frmi_setting_register.html:134
-#: experiment/templates/experiment/frmi_setting_register.html:337
-#: experiment/templates/experiment/frmi_solution_register.html:111
-#: experiment/templates/experiment/frmi_solution_register.html:140
+#: experiment/templates/experiment/fmri_setting_register.html:134
+#: experiment/templates/experiment/fmri_setting_register.html:337
+#: experiment/templates/experiment/fmri_solution_register.html:111
+#: experiment/templates/experiment/fmri_solution_register.html:140
 #: experiment/templates/experiment/group_register.html:144
 #: experiment/templates/experiment/group_register.html:340
 #: experiment/templates/experiment/group_register.html:370
@@ -1426,7 +1426,7 @@ msgstr "Eliminar"
 #: experiment/templates/experiment/emg_setting_register.html:271
 #: experiment/templates/experiment/experiment_register.html:521
 #: experiment/templates/experiment/filtertype_register.html:133
-#: experiment/templates/experiment/frmi_solution_register.html:116
+#: experiment/templates/experiment/fmri_solution_register.html:116
 #: experiment/templates/experiment/group_goalkeeper_game_data.html:105
 #: experiment/templates/experiment/group_goalkeeper_game_data.html:183
 #: experiment/templates/experiment/group_register.html:345
@@ -1520,11 +1520,11 @@ msgstr "Guardar"
 #: experiment/templates/experiment/experiment_register.html:565
 #: experiment/templates/experiment/filtertype_register.html:137
 #: experiment/templates/experiment/filtertype_register.html:156
-#: experiment/templates/experiment/frmi_setting_register.html:316
-#: experiment/templates/experiment/frmi_setting_register.html:335
-#: experiment/templates/experiment/frmi_setting_register.html:352
-#: experiment/templates/experiment/frmi_solution_register.html:120
-#: experiment/templates/experiment/frmi_solution_register.html:139
+#: experiment/templates/experiment/fmri_setting_register.html:316
+#: experiment/templates/experiment/fmri_setting_register.html:335
+#: experiment/templates/experiment/fmri_setting_register.html:352
+#: experiment/templates/experiment/fmri_solution_register.html:120
+#: experiment/templates/experiment/fmri_solution_register.html:139
 #: experiment/templates/experiment/group_goalkeeper_game_data.html:104
 #: experiment/templates/experiment/group_goalkeeper_game_data.html:182
 #: experiment/templates/experiment/group_register.html:349
@@ -1638,7 +1638,7 @@ msgstr "¿Estás seguro de que quieres eliminar el convertidor A/D?"
 #: experiment/templates/experiment/experiment_import.html:40
 #: experiment/templates/experiment/experiment_register.html:47
 #: experiment/templates/experiment/experiment_schedule_of_sending.html:41
-#: experiment/templates/experiment/frmi_setting_register.html:48
+#: experiment/templates/experiment/fmri_setting_register.html:48
 #: experiment/templates/experiment/group_goalkeeper_game_data.html:19
 #: experiment/templates/experiment/group_register.html:52
 #: experiment/templates/experiment/import_log.html:35
@@ -1938,7 +1938,7 @@ msgstr "Pasos con posición fija"
 #: experiment/templates/experiment/electrodemodel_register.html:129
 #: experiment/templates/experiment/emg_setting_electrode.html:214
 #: experiment/templates/experiment/emg_setting_register.html:193
-#: experiment/templates/experiment/frmi_setting_register.html:132
+#: experiment/templates/experiment/fmri_setting_register.html:132
 #: experiment/templates/experiment/pulsesequence_register.html:99
 #: experiment/templates/experiment/pulseshape_register.html:99
 #: experiment/templates/experiment/spoilingtype_register.html:101
@@ -1974,7 +1974,7 @@ msgstr "Nombre de uso"
 #: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:210
 #: experiment/templates/experiment/emg_setting_digital_filter.html:176
 #: experiment/templates/experiment/experiment_register.html:244
-#: experiment/templates/experiment/frmi_setting_register.html:224
+#: experiment/templates/experiment/fmri_setting_register.html:224
 #: experiment/templates/experiment/subject_eeg_data_form.html:281
 #: experiment/views.py:11512
 msgid "Order"
@@ -2081,8 +2081,8 @@ msgstr "Lista de bobinas"
 #: experiment/templates/experiment/experiment_register.html:475
 #: experiment/templates/experiment/filtertype_list.html:49
 #: experiment/templates/experiment/filtertype_register.html:72
-#: experiment/templates/experiment/frmi_setting_register.html:74
-#: experiment/templates/experiment/frmi_solution_register.html:72
+#: experiment/templates/experiment/fmri_setting_register.html:74
+#: experiment/templates/experiment/fmri_solution_register.html:72
 #: experiment/templates/experiment/group_register.html:165
 #: experiment/templates/experiment/manufacturer_list.html:49
 #: experiment/templates/experiment/manufacturer_register.html:72
@@ -2752,7 +2752,7 @@ msgid "EEG Setting"
 msgstr "Ajuste de EEG"
 
 #: experiment/templates/experiment/eeg_setting_register.html:99
-#: experiment/templates/experiment/frmi_setting_register.html:127
+#: experiment/templates/experiment/fmri_setting_register.html:127
 #: experiment/templates/experiment/pulsesequence_register.html:94
 #: experiment/templates/experiment/pulseshape_register.html:94
 #: experiment/templates/experiment/spoilingtype_register.html:96
@@ -2764,7 +2764,7 @@ msgstr "Configuraciones:"
 #: experiment/templates/experiment/emg_setting_electrode.html:215
 #: experiment/templates/experiment/emg_setting_register.html:119
 #: experiment/templates/experiment/emg_setting_register.html:194
-#: experiment/templates/experiment/frmi_setting_register.html:133
+#: experiment/templates/experiment/fmri_setting_register.html:133
 #: experiment/templates/experiment/pulsesequence_register.html:100
 #: experiment/templates/experiment/pulseshape_register.html:100
 #: experiment/templates/experiment/spoilingtype_register.html:102
@@ -2775,12 +2775,12 @@ msgstr "Configuración"
 #: experiment/templates/experiment/eeg_setting_register.html:120
 #: experiment/templates/experiment/emg_electrode_setting_amplifier.html:114
 #: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:114
-#: experiment/templates/experiment/frmi_setting_register.html:149
+#: experiment/templates/experiment/fmri_setting_register.html:149
 msgid "Gain"
 msgstr "Ganancia"
 
 #: experiment/templates/experiment/eeg_setting_register.html:122
-#: experiment/templates/experiment/frmi_setting_register.html:152
+#: experiment/templates/experiment/fmri_setting_register.html:152
 msgid "Sampling rate"
 msgstr "Tasa de muestreo:"
 
@@ -2792,7 +2792,7 @@ msgstr "Tasa de muestreo:"
 #: experiment/templates/experiment/emg_setting_electrode.html:277
 #: experiment/templates/experiment/emg_setting_register.html:219
 #: experiment/templates/experiment/emg_setting_register.html:244
-#: experiment/templates/experiment/frmi_setting_register.html:281
+#: experiment/templates/experiment/fmri_setting_register.html:281
 #: experiment/templates/experiment/tms_setting_register.html:128
 msgid "+ Add setting"
 msgstr "+ Agregar configuración"
@@ -2811,30 +2811,30 @@ msgid "Delete setting from list"
 msgstr "Eliminar configuración de la lista"
 
 #: experiment/templates/experiment/eeg_setting_register.html:140
-#: experiment/templates/experiment/frmi_setting_register.html:175
+#: experiment/templates/experiment/fmri_setting_register.html:175
 #: experiment/views.py:17345
 msgid "Solution"
 msgstr "Solución"
 
 #: experiment/templates/experiment/eeg_setting_register.html:171
 #: experiment/templates/experiment/emg_setting_digital_filter.html:110
-#: experiment/templates/experiment/frmi_setting_register.html:210
+#: experiment/templates/experiment/fmri_setting_register.html:210
 msgid "High pass (Hz)"
 msgstr "Paso alto (Hz)"
 
 #: experiment/templates/experiment/eeg_setting_register.html:173
 #: experiment/templates/experiment/emg_setting_digital_filter.html:96
-#: experiment/templates/experiment/frmi_setting_register.html:213
+#: experiment/templates/experiment/fmri_setting_register.html:213
 msgid "Low pass (Hz)"
 msgstr "Paso bajo (Hz)"
 
 #: experiment/templates/experiment/eeg_setting_register.html:175
-#: experiment/templates/experiment/frmi_setting_register.html:216
+#: experiment/templates/experiment/fmri_setting_register.html:216
 msgid "Band pass range (Hz)"
 msgstr "Rango de paso de banda (Hz)"
 
 #: experiment/templates/experiment/eeg_setting_register.html:177
-#: experiment/templates/experiment/frmi_setting_register.html:220
+#: experiment/templates/experiment/fmri_setting_register.html:220
 msgid "Notch range (Hz)"
 msgstr "Rango de notch (Hz)"
 
@@ -2843,7 +2843,7 @@ msgid "EEG electrode layout"
 msgstr "Disposición de los electrodos de EEG"
 
 #: experiment/templates/experiment/eeg_setting_register.html:208
-#: experiment/templates/experiment/frmi_setting_register.html:262
+#: experiment/templates/experiment/fmri_setting_register.html:262
 msgid "Material:"
 msgstr ""
 
@@ -2856,14 +2856,14 @@ msgid "Are you sure you want to delete this EEG setting?"
 msgstr "¿Está seguro de que desea eliminar esta configuración de EEG?"
 
 #: experiment/templates/experiment/eeg_setting_register.html:284
-#: experiment/templates/experiment/frmi_setting_register.html:349
+#: experiment/templates/experiment/fmri_setting_register.html:349
 msgid "Are you sure you want to delete equipment from list?"
 msgstr "¿Está seguro de que desea eliminar el equipo de la lista?"
 
 #: experiment/templates/experiment/eeg_setting_type_template.html:53
-#: experiment/templates/experiment/frmi_setting_register.html:161
-#: experiment/templates/experiment/frmi_setting_register.html:186
-#: experiment/templates/experiment/frmi_setting_register.html:233
+#: experiment/templates/experiment/fmri_setting_register.html:161
+#: experiment/templates/experiment/fmri_setting_register.html:186
+#: experiment/templates/experiment/fmri_setting_register.html:233
 msgid "Add setting"
 msgstr "+ Agregar configuración"
 
@@ -2954,7 +2954,7 @@ msgstr "Lista de soluciones EEG"
 
 #: experiment/templates/experiment/eegsolution_list.html:50
 #: experiment/templates/experiment/eegsolution_register.html:81
-#: experiment/templates/experiment/frmi_solution_register.html:81
+#: experiment/templates/experiment/fmri_solution_register.html:81
 msgid "Components"
 msgstr "Componentes"
 
@@ -3521,8 +3521,8 @@ msgid "EEG Settings"
 msgstr "Configuraciones de EEG"
 
 #: experiment/templates/experiment/experiment_register.html:367
-msgid "FRMI Settings"
-msgstr "Configuraciones de FRMI"
+msgid "FMRI Settings"
+msgstr "Configuraciones de FMRI"
 
 #: experiment/templates/experiment/experiment_register.html:403
 msgid "EMG Settings"
@@ -3607,56 +3607,56 @@ msgstr "Lista de tipos de filtro"
 msgid "Are you sure you want to delete filter type?"
 msgstr "¿Está seguro de que desea eliminar el tipo de filtro?"
 
-#: experiment/templates/experiment/frmi_setting_register.html:53
-msgid "New FRMI setting"
-msgstr "Nueva Configuración de FRMI"
+#: experiment/templates/experiment/fmri_setting_register.html:53
+msgid "New FMRI setting"
+msgstr "Nueva Configuración de FMRI"
 
-#: experiment/templates/experiment/frmi_setting_register.html:70
-msgid "FRMI Setting"
-msgstr "Configuración de FRMI"
+#: experiment/templates/experiment/fmri_setting_register.html:70
+msgid "FMRI Setting"
+msgstr "Configuración de FMRI"
 
-#: experiment/templates/experiment/frmi_setting_register.html:93
+#: experiment/templates/experiment/fmri_setting_register.html:93
 msgid "Archivo"
 msgstr ""
 
-#: experiment/templates/experiment/frmi_setting_register.html:105
+#: experiment/templates/experiment/fmri_setting_register.html:105
 msgid "There is no file associated."
 msgstr "No hay ningún archivo asociado."
 
-#: experiment/templates/experiment/frmi_setting_register.html:139
+#: experiment/templates/experiment/fmri_setting_register.html:139
 msgid "Sequence Specifics"
 msgstr "Detalles de la secuencia"
 
-#: experiment/templates/experiment/frmi_setting_register.html:168
-#: experiment/templates/experiment/frmi_setting_register.html:193
-#: experiment/templates/experiment/frmi_setting_register.html:240
-#: experiment/templates/experiment/frmi_setting_register.html:288
+#: experiment/templates/experiment/fmri_setting_register.html:168
+#: experiment/templates/experiment/fmri_setting_register.html:193
+#: experiment/templates/experiment/fmri_setting_register.html:240
+#: experiment/templates/experiment/fmri_setting_register.html:288
 #: experiment/templates/experiment/pulsesequence_register.html:139
 #: experiment/templates/experiment/pulseshape_register.html:139
 #: experiment/templates/experiment/spoilingtype_register.html:141
 msgid " Delete setting from list"
 msgstr "Eliminar configuración de la lista"
 
-#: experiment/templates/experiment/frmi_setting_register.html:247
-msgid "frmi electrode layout"
-msgstr "Disposición de los electrodos de FRMI"
+#: experiment/templates/experiment/fmri_setting_register.html:247
+msgid "fmri electrode layout"
+msgstr "Disposición de los electrodos de FMRI"
 
-#: experiment/templates/experiment/frmi_setting_register.html:306
-msgid "Delete frmi setting"
-msgstr "Eliminar configuración de FRMI"
+#: experiment/templates/experiment/fmri_setting_register.html:306
+msgid "Delete fmri setting"
+msgstr "Eliminar configuración de FMRI"
 
-#: experiment/templates/experiment/frmi_setting_register.html:332
-msgid "Are you sure you want to delete this frmi setting?"
-msgstr "¿Está seguro de que desea eliminar esta configuración de FRMI?"
+#: experiment/templates/experiment/fmri_setting_register.html:332
+msgid "Are you sure you want to delete this fmri setting?"
+msgstr "¿Está seguro de que desea eliminar esta configuración de FMRI?"
 
-#: experiment/templates/experiment/frmi_solution_register.html:49
-#: experiment/templates/experiment/frmi_solution_register.html:68
-msgid "FRMI solution"
-msgstr "Solución FRMI"
+#: experiment/templates/experiment/fmri_solution_register.html:49
+#: experiment/templates/experiment/fmri_solution_register.html:68
+msgid "FMRI solution"
+msgstr "Solución FMRI"
 
-#: experiment/templates/experiment/frmi_solution_register.html:136
-msgid "Are you sure you want to delete frmi solution?"
-msgstr "¿Está seguro de que desea eliminar la solución FRMI?"
+#: experiment/templates/experiment/fmri_solution_register.html:136
+msgid "Are you sure you want to delete fmri solution?"
+msgstr "¿Está seguro de que desea eliminar la solución FMRI?"
 
 #: experiment/templates/experiment/generic_data_collection_component.html:8
 #: experiment/templates/experiment/generic_data_collection_component.html:24
@@ -6628,28 +6628,28 @@ msgid "RMI Scanner Device"
 msgstr "Dispositivo RMI"
 
 #: experiment/views.py:17426
-msgid "FRMI setting included successfully."
-msgstr "Configuración de FRMI incluida con éxito."
+msgid "FMRI setting included successfully."
+msgstr "Configuración de FMRI incluida con éxito."
 
 #: experiment/views.py:17460
-msgid "FRMI solution created successfully."
-msgstr "Solución FRMI creada con éxito."
+msgid "FMRI solution created successfully."
+msgstr "Solución FMRI creada con éxito."
 
 #: experiment/views.py:17506
-msgid "FRMI solution removed successfully."
-msgstr "Solución de FRMI eliminada con éxito."
+msgid "FMRI solution removed successfully."
+msgstr "Solución de FMRI eliminada con éxito."
 
 #: experiment/views.py:17509
-msgid "Error trying to delete frmi_solution."
-msgstr "Error al intentar eliminar frmi_solution."
+msgid "Error trying to delete fmri_solution."
+msgstr "Error al intentar eliminar fmri_solution."
 
 #: experiment/views.py:17540
-msgid "FRMI solution updated successfully."
-msgstr "Solución de FRMI actualizada con éxito."
+msgid "FMRI solution updated successfully."
+msgstr "Solución de FMRI actualizada con éxito."
 
 #: experiment/views.py:17580
-msgid "FRMI setting was removed successfully."
-msgstr "La configuración de FRMI se eliminó correctamente."
+msgid "FMRI setting was removed successfully."
+msgstr "La configuración de FMRI se eliminó correctamente."
 
 #: experiment/views.py:17670
 msgid "Ocurrio un error"

@@ -91,8 +91,8 @@ from experiment.models import (
     GenericDataCollection,
     GenericDataCollectionData,
     ScheduleOfSending,
-    FRMI,
-    FRMISetting,
+    FMRI,
+    FMRISetting,
     MRIScanner,
     SpoilingType,
     PulseShape,
@@ -356,26 +356,26 @@ class EEGForm(ModelForm):
             )
 
 
-class FRMIForm(ModelForm):
+class FMRIForm(ModelForm):
     class Meta:
-        model = FRMI
-        fields = ["frmi_setting"]
+        model = FMRI
+        fields = ["fmri_setting"]
 
         widgets = {
-            "frmi_setting": Select(
+            "fmri_setting": Select(
                 attrs={
                     "class": "form-control",
                     "required": "",
-                    "data-error": _("FRMI setting type must be filled."),
+                    "data-error": _("FMRI setting type must be filled."),
                 }
             )
         }
 
     def __init__(self, *args, **kwargs):
-        super(EEGForm, self).__init__(*args, **kwargs)
+        super(FMRIForm, self).__init__(*args, **kwargs)
         initial = kwargs.get("initial")
         if initial:
-            self.fields["eeg_setting"].queryset = EEGSetting.objects.filter(
+            self.fields["fmri_setting"].queryset = EEGSetting.objects.filter(
                 experiment=initial["experiment"]
             )
 
@@ -2304,7 +2304,7 @@ class ResendExperimentForm(ModelForm):
         }
 
 
-# FRMI Setup Section Added
+# FMRI Setup Section Added
 class MRIScannerForm(ModelForm):
     class Meta:
         model = MRIScanner
@@ -2525,7 +2525,7 @@ class ParallelImagingForm(ModelForm):
         }
 
 
-# FRMI Section Added
+# FMRI Section Added
 class InPlaneSpatialEncodingForm(ModelForm):
     class Meta:
         model = InPlaneSpatialEncoding
@@ -2705,9 +2705,9 @@ class FMRIMachineSettingsForm(ModelForm):
         }
 
 
-class FRMISettingForm(ModelForm):
+class FMRISettingForm(ModelForm):
     class Meta:
-        model = FRMISetting
+        model = FMRISetting
 
         fields = ["fmri_machine_setting", "name", "description"]
 
@@ -2738,7 +2738,7 @@ class FRMISettingForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(FRMISettingForm, self).__init__(*args, **kwargs)
+        super(FMRISettingForm, self).__init__(*args, **kwargs)
 
         self.fields[
             "fmri_machine_setting"
@@ -2978,25 +2978,25 @@ class SequenceSpecificForm(ModelForm):
 
 
 # Dummy class until final version is defined
-class FRMIForm(ModelForm):
+class FMRIForm(ModelForm):
     class Meta:
-        model = FRMI
-        fields = ["frmi_setting"]
+        model = FMRI
+        fields = ["fmri_setting"]
 
         widgets = {
-            "frmi_setting": Select(
+            "fmri_setting": Select(
                 attrs={
                     "class": "form-control",
                     "required": "",
-                    "data-error": _("FRMI setting type must be filled."),
+                    "data-error": _("FMRI setting type must be filled."),
                 },
             ),
         }
 
     def __init__(self, *args, **kwargs):
-        super(FRMIForm, self).__init__(*args, **kwargs)
+        super(FMRIForm, self).__init__(*args, **kwargs)
         initial = kwargs.get("initial")
         if initial:
-            self.fields["frmi_setting"].queryset = FRMISetting.objects.filter(
+            self.fields["fmri_setting"].queryset = FMRISetting.objects.filter(
                 experiment=initial["experiment"]
             )

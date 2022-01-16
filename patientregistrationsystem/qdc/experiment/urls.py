@@ -976,33 +976,33 @@ urlpatterns = [
         views.questionnaire_view,
         name="questionnaire_view",
     ),
-    # register frmi solution
+    # register fmri solution
     url(
-        r"^(?P<experiment_id>\d+)/frmi_setting/new/$",
-        views.frmi_setting_create,
-        name="frmi_setting_new",
+        r"^(?P<experiment_id>\d+)/fmri_setting/new/$",
+        views.fmri_setting_create,
+        name="fmri_setting_new",
     ),
     url(
-        r"^mri_setting/(?P<frmi_setting_id>\d+)/$",
-        views.frmi_setting_view,
-        name="frmi_setting_view",
+        r"^mri_setting/(?P<fmri_setting_id>\d+)/$",
+        views.fmri_setting_view,
+        name="fmri_setting_view",
     ),
     url(
-        r"^mri_setting/edit/(?P<frmi_setting_id>\d+)/$",
-        views.frmi_setting_update,
-        name="frmi_setting_edit",
+        r"^mri_setting/edit/(?P<fmri_setting_id>\d+)/$",
+        views.fmri_setting_update,
+        name="fmri_setting_edit",
     ),
-    url(r"^frmi_solution/list/$", views.frmi_solution_list, name="frmi_solution_list"),
-    url(r"^frmi_solution/new/$", views.frmi_solution_create, name="frmi_solution_new"),
+    url(r"^fmri_solution/list/$", views.fmri_solution_list, name="fmri_solution_list"),
+    url(r"^fmri_solution/new/$", views.fmri_solution_create, name="fmri_solution_new"),
     url(
-        r"^frmi_solution/(?P<frmi_solution_id>\d+)/$",
-        views.frmi_solution_view,
-        name="frmi_solution_view",
+        r"^fmri_solution/(?P<fmri_solution_id>\d+)/$",
+        views.fmri_solution_view,
+        name="fmri_solution_view",
     ),
     url(
-        r"^frmi_solution/edit/(?P<frmi_solution_id>\d+)/$",
-        views.frmi_solution_update,
-        name="frmi_solution_edit",
+        r"^fmri_solution/edit/(?P<fmri_solution_id>\d+)/$",
+        views.fmri_solution_update,
+        name="fmri_solution_edit",
     ),
 
     # register PulseSequence device
@@ -1098,14 +1098,14 @@ urlpatterns = [
         name="mri_machine_create",
     ),
     url(
-        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)$",
-        views.frmi_machine_view,
-        name="frmi_machine_view",
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<fmri_machine_id>\d+)$",
+        views.fmri_machine_view,
+        name="fmri_machine_view",
     ),
     url(
-        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<frmi_machine_id>\d+)/edit$",
-        views.frmi_machine_update,
-        name="frmi_machine_update",
+        r"^mri_setting/(?P<mri_setting_id>\d+)/mri_machine/(?P<fmri_machine_id>\d+)/edit$",
+        views.fmri_machine_update,
+        name="fmri_machine_update",
     ),
     # register TimingParameters
     url(
@@ -1191,12 +1191,12 @@ urlpatterns = [
     #    views.questionnaire_view,
     #    name="questionnaire_view",
     # ),
-    # # register frmi solution
-    # url(r'^(?P<experiment_id>\d+)/frmi_setting/new/$', views.frmi_setting_create, name='frmi_setting_new'),
-    #     url(r'^frmi_setting/(?P<frmi_setting_id>\d+)/$', views.frmi_setting_view, name='frmi_setting_view'),
-    # url(r'^frmi_setting/edit/(?P<frmi_setting_id>\d+)/$', views.frmi_setting_update, name='frmi_setting_edit'),
-    # url(r'^frmisolution/list/$', views.frmisolution_list, name='frmisolution_list'),
-    # url(r'^frmisolution/new/$', views.frmisolution_create, name='frmisolution_new'),
-    # url(r'^frmisolution/(?P<frmisolution_id>\d+)/$', views.frmisolution_view, name='frmisolution_view'),
-    # url(r'^frmisolution/edit/(?P<frmisolution_id>\d+)/$', views.frmisolution_update, name='frmisolution_edit'),
+    # # register fmri solution
+    # url(r'^(?P<experiment_id>\d+)/fmri_setting/new/$', views.fmri_setting_create, name='fmri_setting_new'),
+    #     url(r'^fmri_setting/(?P<fmri_setting_id>\d+)/$', views.fmri_setting_view, name='fmri_setting_view'),
+    # url(r'^fmri_setting/edit/(?P<fmri_setting_id>\d+)/$', views.fmri_setting_update, name='fmri_setting_edit'),
+    # url(r'^fmrisolution/list/$', views.fmrisolution_list, name='fmrisolution_list'),
+    # url(r'^fmrisolution/new/$', views.fmrisolution_create, name='fmrisolution_new'),
+    # url(r'^fmrisolution/(?P<fmrisolution_id>\d+)/$', views.fmrisolution_view, name='fmrisolution_view'),
+    # url(r'^fmrisolution/edit/(?P<fmrisolution_id>\d+)/$', views.fmrisolution_update, name='fmrisolution_edit'),
 ]

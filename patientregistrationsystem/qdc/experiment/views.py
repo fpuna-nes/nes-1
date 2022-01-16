@@ -142,7 +142,7 @@ from .models import (
     PortalSelectedQuestion,
     ComponentAdditionalFile,
     GoalkeeperPhase,
-    FRMISetting,
+    FMRISetting,
     MRIScanner,
     PulseSequence,
     PulseShape,
@@ -232,7 +232,7 @@ from .forms import (
     GenericDataCollectionDataForm,
     ResendExperimentForm,
     ResearchProjectOwnerForm,
-    FRMISettingForm,
+    FMRISettingForm,
     MRIScannerForm,
     PulseSequenceForm,
     PulseShapeForm,
@@ -244,7 +244,7 @@ from .forms import (
     TimingParametersForm,
     RFContrastForm,
     SliceAccelerationForm,
-    InPlaneSpatialEncodingForm,
+    InPlaneSpatialEncodingForm, FMRIForm,
 )
 
 from .portal import (
@@ -319,7 +319,7 @@ icon_class = {
     "digital_game_phase": "glyphicon glyphicon-play-circle",
     "generic_data_collection": "glyphicon glyphicon-file",
     "additional_data": "fa fa-puzzle-piece",
-    "frmi": "glyphicon glyphicon-screenshot",
+    "fmri": "glyphicon glyphicon-screenshot",
 }
 
 data_type_name = {
@@ -327,6 +327,7 @@ data_type_name = {
     "eeg": "EEG",
     "emg": "EMG",
     "tms": "TMS",
+    "fmri": "MRI",
     "digital_game_phase": _("goalkeeper game"),
     "generic_data_collection": _("generic data collection"),
     "questionnaire": _("questionnaire"),
@@ -916,7 +917,7 @@ def experiment_view(
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     group_list = Group.objects.filter(experiment=experiment).order_by("title")
     eeg_setting_list = EEGSetting.objects.filter(experiment=experiment).order_by("name")
-    frmi_setting_list = FRMISetting.objects.filter(experiment=experiment).order_by(
+    fmri_setting_list = FMRISetting.objects.filter(experiment=experiment).order_by(
         "name"
     )
     emg_setting_list = EMGSetting.objects.filter(experiment=experiment).order_by("name")
@@ -1015,7 +1016,7 @@ def experiment_view(
         "experiment_form": experiment_form,
         "group_list": group_list,
         "eeg_setting_list": eeg_setting_list,
-        "frmi_setting_list": frmi_setting_list,
+        "fmri_setting_list": fmri_setting_list,
         "emg_setting_list": emg_setting_list,
         "tms_setting_list": tms_setting_list,
         "context_tree_list": context_tree_list,
@@ -11617,7 +11618,7 @@ def subject_additional_data_create(
                     idFormatoValor = idFormato.values_list("pk", flat=True)
                     logger.debug(idFormatoValor)
                     for elemento in idFormatoValor:
-                        if elemento == 5:  # es un dato frmi
+                        if elemento == 5:  # es un dato fmri
                             dato_orthanc = additional_data_file.file
                             dato_orthanc = dato_orthanc.read()
                             httpreq = httplib2.Http()
@@ -12328,6 +12329,10 @@ def component_create(request, experiment_id, component_type):
         )
     elif component_type == "emg":
         specific_form = EMGForm(
+            request.POST or None, initial={"experiment": experiment}
+        )
+    elif component_type == "fmri":
+        specific_form = FMRIForm(
             request.POST or None, initial={"experiment": experiment}
         )
     elif component_type == "tms":
@@ -16968,7 +16973,7 @@ template_name="experiment/mri_spoiling_setting_register.html"):
    
     spoiling_type_list = SpoilingType.objects.all().distinct()
     spoiling_setting_form = SpoilingSettingForm(request.POST or None)
-    mri_setting = FRMISetting.objects.get(id=mri_setting_id)
+    mri_setting = FMRISetting.objects.get(id=mri_setting_id)
     sequencespecific_obj = SequenceSpecific.objects.get(id=sequencespecific_id)
 
     if request.method == "POST":
@@ -17007,7 +17012,7 @@ def spoiling_setting_view(
     spoiling_type_list = SpoilingType.objects.all().distinct()
     spoiling_setting_obj = get_object_or_404(SpoilingSetting, sequence_specific=sequencespecific_id)
     spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting_obj)
-    mri_setting = FRMISetting.objects.get(id=mri_setting_id)
+    mri_setting = FMRISetting.objects.get(id=mri_setting_id)
     sequencespecific_obj = SequenceSpecific.objects.get(id=sequencespecific_id)
 
     for field in spoiling_setting_form.fields:
@@ -17043,7 +17048,7 @@ def spoiling_setting_update(
 ):
     spoiling_setting_obj = get_object_or_404(SpoilingSetting, sequence_specific=sequencespecific_id)
     spoiling_type_list = SpoilingType.objects.all().distinct()
-    mri_setting = FRMISetting.objects.get(id=mri_setting_id)
+    mri_setting = FMRISetting.objects.get(id=mri_setting_id)
     sequencespecific_obj = SequenceSpecific.objects.get(id=sequencespecific_id)
     spoiling_setting_form = SpoilingSettingForm(request.POST or None, instance=spoiling_setting_obj)
 
@@ -17649,14 +17654,14 @@ def setup_menu(request, template_name="experiment/setup_menu.html"):
 
 @login_required
 @permission_required("experiment.add_subject")
-def frmi_setting_create(
-    request, experiment_id, template_name="experiment/frmi_setting_register.html"
+def fmri_setting_create(
+    request, experiment_id, template_name="experiment/fmri_setting_register.html"
 ):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
     
     check_can_change(request.user, experiment.research_project)
 
-    mri_setting_form = FRMISettingForm(request.POST or None)
+    mri_setting_form = FMRISettingForm(request.POST or None)
     fmri_machine_form = FMRIMachineSettingsForm(request.POST or None)
     list_of_mri_scanner = MRIScanner.objects.all().distinct()
 
@@ -17664,20 +17669,20 @@ def frmi_setting_create(
         if request.POST["action"] == "save":
             if mri_setting_form.is_valid() and fmri_machine_form.is_valid():
 
-                frmi_machine_setting_added = fmri_machine_form.save(commit=False)
-                frmi_machine_setting_added.save()
+                fmri_machine_setting_added = fmri_machine_form.save(commit=False)
+                fmri_machine_setting_added.save()
 
-                frmi_setting_added = mri_setting_form.save(commit=False)
-                frmi_setting_added.experiment_id = experiment_id
-                frmi_setting_added.fmri_machine_setting= FMRIMachineSettings.objects.get(id=frmi_machine_setting_added.id)
-                frmi_setting_added.save()
+                fmri_setting_added = mri_setting_form.save(commit=False)
+                fmri_setting_added.experiment_id = experiment_id
+                fmri_setting_added.fmri_machine_setting= FMRIMachineSettings.objects.get(id=fmri_machine_setting_added.id)
+                fmri_setting_added.save()
 
 
 
-                messages.success(request, _("FRMI setting included successfully."))
+                messages.success(request, _("FMRI setting included successfully."))
 
                 redirect_url = reverse(
-                    "frmi_setting_view", args=(frmi_setting_added.id,)
+                    "fmri_setting_view", args=(fmri_setting_added.id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 
@@ -17695,24 +17700,24 @@ def frmi_setting_create(
 
 @login_required
 @permission_required("experiment.register_equipment")
-def frmi_solution_create(
-    request, template_name="experiment/frmi_solution_register.html"
+def fmri_solution_create(
+    request, template_name="experiment/fmri_solution_register.html"
 ):
 
-    frmi_solution_form = FRMISolutionRegisterForm(request.POST or None)
+    fmri_solution_form = FMRISolutionRegisterForm(request.POST or None)
 
     if request.method == "POST":
 
         if request.POST["action"] == "save":
 
-            if frmi_solution_form.is_valid():
+            if fmri_solution_form.is_valid():
 
-                frmi_solution_added = frmi_solution_form.save(commit=False)
-                frmi_solution_added.save()
+                fmri_solution_added = fmri_solution_form.save(commit=False)
+                fmri_solution_added.save()
 
-                messages.success(request, _("FRMI solution created successfully."))
+                messages.success(request, _("FMRI solution created successfully."))
                 redirect_url = reverse(
-                    "frmi_solution_view", args=(frmi_solution_added.id,)
+                    "fmri_solution_view", args=(fmri_solution_added.id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 
@@ -17722,51 +17727,51 @@ def frmi_solution_create(
         else:
             messages.warning(request, _("Action not available."))
 
-    context = {"equipment_form": frmi_solution_form, "creating": True, "editing": True}
+    context = {"equipment_form": fmri_solution_form, "creating": True, "editing": True}
 
     return render(request, template_name, context)
 
 
 @login_required
 @permission_required("experiment.register_equipment")
-def frmi_solution_list(request, template_name="experiment/frmi_solution_list.html"):
+def fmri_solution_list(request, template_name="experiment/fmri_solution_list.html"):
     return render(
         request,
         template_name,
-        {"equipments": FRMISolution.objects.all().order_by("name")},
+        {"equipments": FMRISolution.objects.all().order_by("name")},
     )
 
 
 @login_required
 @permission_required("experiment.register_equipment")
-def frmi_solution_view(
-    request, frmi_solution_id, template_name="experiment/frmi_solution_register.html"
+def fmri_solution_view(
+    request, fmri_solution_id, template_name="experiment/fmri_solution_register.html"
 ):
-    frmi_solution = get_object_or_404(FRMISolution, pk=frmi_solution_id)
+    fmri_solution = get_object_or_404(FMRISolution, pk=fmri_solution_id)
 
-    frmi_solution_form = FRMISolutionRegisterForm(
-        request.POST or None, instance=frmi_solution
+    fmri_solution_form = FMRISolutionRegisterForm(
+        request.POST or None, instance=fmri_solution
     )
 
-    for field in frmi_solution_form.fields:
-        frmi_solution_form.fields[field].widget.attrs["disabled"] = True
+    for field in fmri_solution_form.fields:
+        fmri_solution_form.fields[field].widget.attrs["disabled"] = True
 
     if request.method == "POST":
         if request.POST["action"] == "remove":
 
             try:
-                frmi_solution.delete()
-                messages.success(request, _("FRMI solution removed successfully."))
-                return redirect("frmi_solution_list")
+                fmri_solution.delete()
+                messages.success(request, _("FMRI solution removed successfully."))
+                return redirect("fmri_solution_list")
             except ProtectedError:
-                messages.error(request, _("Error trying to delete frmi_solution."))
-                redirect_url = reverse("frmi_solution_view", args=(frmi_solution_id,))
+                messages.error(request, _("Error trying to delete fmri_solution."))
+                redirect_url = reverse("fmri_solution_view", args=(fmri_solution_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
         "can_change": True,
-        "equipment": frmi_solution,
-        "equipment_form": frmi_solution_form,
+        "equipment": fmri_solution,
+        "equipment_form": fmri_solution_form,
     }
 
     return render(request, template_name, context)
@@ -17774,32 +17779,32 @@ def frmi_solution_view(
 
 @login_required
 @permission_required("experiment.register_equipment")
-def frmi_solution_update(
-    request, frmi_solution_id, template_name="experiment/frmi_solution_register.html"
+def fmri_solution_update(
+    request, fmri_solution_id, template_name="experiment/fmri_solution_register.html"
 ):
-    frmi_solution = get_object_or_404(FRMISolution, pk=frmi_solution_id)
-    frmi_solution.equipment_type = "frmi_solution"
+    fmri_solution = get_object_or_404(FMRISolution, pk=fmri_solution_id)
+    fmri_solution.equipment_type = "fmri_solution"
 
-    frmi_solution_form = FRMISolutionRegisterForm(
-        request.POST or None, instance=frmi_solution
+    fmri_solution_form = FMRISolutionRegisterForm(
+        request.POST or None, instance=fmri_solution
     )
 
     if request.method == "POST":
         if request.POST["action"] == "save":
-            if frmi_solution_form.is_valid():
-                if frmi_solution_form.has_changed():
+            if fmri_solution_form.is_valid():
+                if fmri_solution_form.has_changed():
 
-                    frmi_solution_form.save()
-                    messages.success(request, _("FRMI solution updated successfully."))
+                    fmri_solution_form.save()
+                    messages.success(request, _("FMRI solution updated successfully."))
                 else:
                     messages.success(request, _("There is no changes to save."))
 
-                redirect_url = reverse("eegsolution_view", args=(frmi_solution.id,))
+                redirect_url = reverse("eegsolution_view", args=(fmri_solution.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
-        "equipment": frmi_solution,
-        "equipment_form": frmi_solution_form,
+        "equipment": fmri_solution,
+        "equipment_form": fmri_solution_form,
         "editing": True,
     }
 
@@ -17808,12 +17813,12 @@ def frmi_solution_update(
 
 @login_required
 @permission_required("experiment.view_researchproject")
-def frmi_setting_view(
-    request, frmi_setting_id, template_name="experiment/frmi_setting_register.html"
+def fmri_setting_view(
+    request, fmri_setting_id, template_name="experiment/fmri_setting_register.html"
 ):
 
-    mri_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
-    mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
+    mri_setting = get_object_or_404(FMRISetting, pk=fmri_setting_id)
+    mri_setting_form = FMRISettingForm(request.POST or None, instance=mri_setting)
     #configuraciones de mri
     mri_machine_obj = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
     mri_scanner_obj = MRIScanner.objects.get(id=mri_machine_obj.mri_machine.id)
@@ -17831,12 +17836,12 @@ def frmi_setting_view(
     if request.method == "POST":
         if can_change:
             if request.POST["action"] == "remove":
-                # TODO: checking if there is some FRMI Data using it
-                # TODO: checking if there is some FRMI Step using it
+                # TODO: checking if there is some FMRI Data using it
+                # TODO: checking if there is some FMRI Step using it
 
                 experiment_id = mri_setting.experiment_id
                 mri_setting.delete()
-                messages.success(request, _("FRMI setting was removed successfully."))
+                messages.success(request, _("FMRI setting was removed successfully."))
 
                 redirect_url = reverse("experiment_view", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
@@ -17859,11 +17864,11 @@ def frmi_setting_view(
 
 @login_required
 @permission_required("experiment.change_experiment")
-def frmi_setting_update(
-    request, frmi_setting_id, template_name="experiment/frmi_setting_register.html"
+def fmri_setting_update(
+    request, fmri_setting_id, template_name="experiment/fmri_setting_register.html"
 ):
-    mri_setting = get_object_or_404(FRMISetting, pk=frmi_setting_id)
-    mri_setting_form = FRMISettingForm(request.POST or None, instance=mri_setting)
+    mri_setting = get_object_or_404(FMRISetting, pk=fmri_setting_id)
+    mri_setting_form = FMRISettingForm(request.POST or None, instance=mri_setting)
     mri_machine_obj = FMRIMachineSettings.objects.get(id=mri_setting.fmri_machine_setting.id)
     mri_scanner_obj = MRIScanner.objects.get(id=mri_machine_obj.mri_machine.id)
     fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=mri_machine_obj)
@@ -17881,7 +17886,7 @@ def frmi_setting_update(
                     messages.success(request, _("Guardado exitosamente."))
                 else:
                     messages.error(request, _("Ocurrio un error"))
-        redirect_url = reverse("frmi_setting_view", args=(frmi_setting_id,))
+        redirect_url = reverse("fmri_setting_view", args=(fmri_setting_id,))
         return HttpResponseRedirect(redirect_url)
     context = {
         "can_change": can_change,
@@ -17907,7 +17912,7 @@ def mri_setting_sequencespecific_create(
 ):
 
     mri_setting = get_object_or_404(
-        FRMISetting, pk=mri_setting_id
+        FMRISetting, pk=mri_setting_id
     )
 
     can_change = get_can_change(
@@ -17930,7 +17935,7 @@ def mri_setting_sequencespecific_create(
     if request.method == "POST":
 
         if request.POST["action"] == "save":
-                # frmi_machine_added.mri_machine = request.POST["software_version"]
+                # fmri_machine_added.mri_machine = request.POST["software_version"]
             if sequencespecific_form.is_valid():
 
                 sequencespecific_added = sequencespecific_form.save(commit=False)
@@ -17976,7 +17981,7 @@ def mri_setting_sequencespecific_view(
 ):
 
     mri_setting = get_object_or_404(
-        FRMISetting, pk=mri_setting_id
+        FMRISetting, pk=mri_setting_id
     )
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
@@ -18035,13 +18040,13 @@ def mri_setting_sequencespecific_view(
     if request.method == "POST":
         if can_change:
             if request.POST["action"] == "remove":
-                # TODO: checking if there is some FRMI Data using it
-                # TODO: checking if there is some FRMI Step using it
+                # TODO: checking if there is some FMRI Data using it
+                # TODO: checking if there is some FMRI Step using it
 
                 sequencespecific_obj.delete()
                 messages.success(request, _("Sequence Specific was removed successfully."))
 
-                redirect_url = reverse("frmi_setting_view", args=(mri_setting_id,))
+                redirect_url = reverse("fmri_setting_view", args=(mri_setting_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {
@@ -18077,7 +18082,7 @@ def mri_setting_sequencespecific_update(
 ):
 
     mri_setting = get_object_or_404(
-        FRMISetting, pk=mri_setting_id
+        FMRISetting, pk=mri_setting_id
     )
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
@@ -18106,7 +18111,7 @@ def mri_setting_sequencespecific_update(
     if request.method == "POST":
         if can_change:
             if request.POST["action"] == "save":
-                    # frmi_machine_added.mri_machine = request.POST["software_version"]
+                    # fmri_machine_added.mri_machine = request.POST["software_version"]
                 if sequencespecific_form.is_valid():
 
                     sequencespecific_added = sequencespecific_form.save(commit=False)
@@ -18146,10 +18151,10 @@ def mri_setting_sequencespecific_update(
 def mri_machine_create(
     request, 
     mri_setting_id,
-    template_name="experiment/frmi_machine_register.html"
+    template_name="experiment/fmri_machine_register.html"
 ):
 
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     fmri_machine_form = FMRIMachineSettingsForm(request.POST or None)
 
     list_of_mri_machines = MRIScanner.objects.all().distinct()
@@ -18157,16 +18162,16 @@ def mri_machine_create(
     if request.method == "POST":
 
         if request.POST["action"] == "save":
-                # frmi_machine_added.mri_machine = request.POST["software_version"]
+                # fmri_machine_added.mri_machine = request.POST["software_version"]
             if fmri_machine_form.is_valid():
 
-                frmi_machine_added = fmri_machine_form.save(commit=False)
-                frmi_machine_added.frmi_setting=mri_setting
-                frmi_machine_added.save()
+                fmri_machine_added = fmri_machine_form.save(commit=False)
+                fmri_machine_added.fmri_setting=mri_setting
+                fmri_machine_added.save()
 
                 messages.success(request, _("FMRI machine created successfully."))
                 redirect_url = reverse(
-                    "frmi_machine_view", args=(mri_setting_id,frmi_machine_added.id,)
+                    "fmri_machine_view", args=(mri_setting_id,fmri_machine_added.id,)
                 )
                 return HttpResponseRedirect(redirect_url)
 
@@ -18186,12 +18191,12 @@ def mri_machine_create(
 
 @login_required
 @permission_required("experiment.view_researchproject")
-def frmi_machine_view(
-    request, mri_setting_id, frmi_machine_id, template_name="experiment/frmi_machine_register.html"
+def fmri_machine_view(
+    request, mri_setting_id, fmri_machine_id, template_name="experiment/fmri_machine_register.html"
 ):
 
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
-    fmri_machine = get_object_or_404(FMRIMachineSettings, pk=frmi_machine_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
+    fmri_machine = get_object_or_404(FMRIMachineSettings, pk=fmri_machine_id)
     fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=fmri_machine)
     list_of_mri_machines = MRIScanner.objects.all().distinct()
 
@@ -18203,15 +18208,15 @@ def frmi_machine_view(
     if request.method == "POST":
         if can_change:
             if request.POST["action"] == "remove":
-                # TODO: checking if there is some FRMI Data using it
+                # TODO: checking if there is some FMRI Data using it
 
-                # TODO: checking if there is some FRMI Step using it
+                # TODO: checking if there is some FMRI Step using it
 
                 fmri_machine.delete()
 
-                messages.success(request, _("FRMI machine was removed successfully."))
+                messages.success(request, _("FMRI machine was removed successfully."))
 
-                redirect_url = reverse("frmi_setting_view", args=(mri_setting_id,))
+                redirect_url = reverse("fmri_setting_view", args=(mri_setting_id,))
                 return HttpResponseRedirect(redirect_url)
 
 
@@ -18227,12 +18232,12 @@ def frmi_machine_view(
 
 @login_required
 @permission_required("experiment.view_researchproject")
-def frmi_machine_update(
-    request, mri_setting_id, frmi_machine_id, template_name="experiment/frmi_machine_register.html"
+def fmri_machine_update(
+    request, mri_setting_id, fmri_machine_id, template_name="experiment/fmri_machine_register.html"
 ):
 
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
-    fmri_machine = get_object_or_404(FMRIMachineSettings, pk=frmi_machine_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
+    fmri_machine = get_object_or_404(FMRIMachineSettings, pk=fmri_machine_id)
     fmri_machine_form = FMRIMachineSettingsForm(request.POST or None, instance=fmri_machine)
     list_of_mri_machines = MRIScanner.objects.all().distinct()
 
@@ -18246,7 +18251,7 @@ def frmi_machine_update(
                     messages.success(request, _("Guardado exitosamente."))
                 else:
                     messages.error(request, _("Ocurrio un error"))
-        redirect_url = reverse("frmi_machine_view", args=(mri_setting_id, frmi_machine_id,))
+        redirect_url = reverse("fmri_machine_view", args=(mri_setting_id, fmri_machine_id,))
         return HttpResponseRedirect(redirect_url)
 
     context = {"fmri_machine_form": fmri_machine_form, 
@@ -18297,7 +18302,7 @@ def timingparameter_create(request, mri_setting_id, sequencespecific_id, templat
 def timingparameter_view(request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_timingparameters_register.html"):
     timingparameter_ = get_object_or_404(TimingParameters, pk=sequencespecific_id)
     timingparameter_form = TimingParametersForm(request.POST or None, instance=timingparameter_)
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
@@ -18330,7 +18335,7 @@ def timingparameter_edit(
         request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_timingparameters_register.html"
 ):
     timingparameters = get_object_or_404(TimingParameters, pk=sequencespecific_id)
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
@@ -18369,7 +18374,7 @@ def timingparameter_edit(
 def rfcontrast_create(request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_rfcontrast_register.html"):
     
     rfcontrast_form = RFContrastForm(request.POST or None)
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
@@ -18408,7 +18413,7 @@ def rfcontrast_view(
 ):
     rfcontrast_ = get_object_or_404(RFContrast, pk=sequencespecific_id)
     rfcontrast_form = RFContrastForm(request.POST or None, instance=rfcontrast_)
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
@@ -18443,7 +18448,7 @@ def rfcontrast_update(
         request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_rfcontrast_register.html"
 ):
     rfcontrast = get_object_or_404(RFContrast, pk=sequencespecific_id)
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
@@ -18481,7 +18486,7 @@ def rfcontrast_update(
 @permission_required("experiment.add_sliceacceleration")
 def sliceacceleration_create(request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_sliceacceleration_register.html"):
     sliceacceleration_form = SliceAccelerationForm(request.POST or None)    
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
@@ -18520,7 +18525,7 @@ def sliceacceleration_view(
 ):
     sliceacceleration_ = get_object_or_404(SliceAcceleration, pk=sequencespecific_id)
     sliceacceleration_form = SliceAccelerationForm(request.POST or None, instance=sliceacceleration_)
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
@@ -18555,7 +18560,7 @@ def sliceacceleration_update(
         request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_sliceacceleration_register.html"
 ):
     sliceacceleration = get_object_or_404(SliceAcceleration, pk=sequencespecific_id)
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
@@ -18593,7 +18598,7 @@ def sliceacceleration_update(
 def inplanespatialencoding_create(request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_inplanespatialencoding_register.html"):
     inplanespatialencoding_form = InPlaneSpatialEncodingForm(request.POST or None)    
     list_of_parallelimaging = ParallelImaging.objects.all().distinct()
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
@@ -18635,7 +18640,7 @@ def inplanespatialencoding_view(
 ):
     inplanespatialencoding_ = get_object_or_404(InPlaneSpatialEncoding, pk=sequencespecific_id)
     inplanespatialencoding_form = InPlaneSpatialEncodingForm(request.POST or None, instance=inplanespatialencoding_)
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
@@ -18672,7 +18677,7 @@ def inplanespatialencoding_update(
         request, mri_setting_id, sequencespecific_id, template_name="experiment/mri_inplanespatialencoding_register.html"
 ):
     inplanespatialencoding = get_object_or_404(InPlaneSpatialEncoding, pk=sequencespecific_id)
-    mri_setting = get_object_or_404(FRMISetting, pk=mri_setting_id)
+    mri_setting = get_object_or_404(FMRISetting, pk=mri_setting_id)
     sequencespecific_obj = get_object_or_404(
         SequenceSpecific, pk=sequencespecific_id
     )
