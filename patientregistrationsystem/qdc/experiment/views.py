@@ -11669,28 +11669,6 @@ def subject_additional_data_create(
 
                             print("exito")
 
-                            # httpreq = httplib2.Http()
-                            #
-                            # httpreq.add_credentials("orthanc", "orthanc")
-                            # (resp, content) = httpreq.request(
-                            #     "http://172.18.0.3:8042/instances",
-                            #     "POST",
-                            #     body=dato_orthanc,
-                            #     headers={"content-type": "application/octet-stream"},
-                            # )
-                            # logger.debug(resp)
-                            # respuesta = json.loads(content)
-                            # logger.debug(respuesta)
-                            # if (
-                            #     respuesta["Status"] == "Success"
-                            #     or respuesta["Status"] == "AlreadyStored"
-                            # ):
-                            #     additional_data_file.idorthanc = respuesta["ID"]
-                            #     additional_data_file.save()
-                            #     messages.success(request, _("Guardado exitosamente."))
-                            # else:
-                            #     messages.error(request, _("Error de orthanc"))
-
                 messages.success(
                     request, _("Additional data collection created successfully.")
                 )
