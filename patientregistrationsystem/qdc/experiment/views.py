@@ -319,6 +319,7 @@ icon_class = {
     "digital_game_phase": "glyphicon glyphicon-play-circle",
     "generic_data_collection": "glyphicon glyphicon-file",
     "additional_data": "fa fa-puzzle-piece",
+    "frmi": "glyphicon glyphicon-screenshot",
 }
 
 data_type_name = {
