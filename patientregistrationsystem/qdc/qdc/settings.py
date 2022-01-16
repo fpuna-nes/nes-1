@@ -203,6 +203,8 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
+DCM2BIDS_CONFIG = os.path.join(BASE_DIR, "qdc", "dcm2bids_config.json")
+
 try:
     from .settings_local import *
 except ImportError:

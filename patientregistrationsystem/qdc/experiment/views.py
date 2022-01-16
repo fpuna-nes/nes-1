@@ -1,5 +1,6 @@
 # coding=utf-8
 import csv
+import pathlib
 import re
 import json
 import random
@@ -18,6 +19,7 @@ from nwb.nwbco import *
 import mne
 import base64
 import os
+import magic
 
 from datetime import date, timedelta, datetime
 from dateutil.relativedelta import relativedelta
@@ -11622,10 +11624,50 @@ def subject_additional_data_create(
                     for elemento in idFormatoValor:
                         if elemento == 5:  # es un dato fmri
                             archivo = additional_data_file.file
-                            ds = pydicom.dcmread(archivo)
-                            json_file = ds.to_json_dict()
+                            directory_r = archivo.path.replace(archivo.path.split('/')[-1], "")
+                            content_type = magic.from_buffer(archivo.read(2048), mime=True).split('/')[1]
+                            if content_type == 'dicom':
+                                directory_o = directory_r + 'nii/'
+                                pathlib.Path(directory_o).mkdir(parents=True, exist_ok=True)
 
-                            print(archivo)
+                                import subprocess
+                                import shutil
+                                from django.conf import settings
+
+                                subprocess.call([
+                                    "dcm2bids",
+                                    "-d", directory_r,
+                                    "-p", archivo.path.split('/')[-1],
+                                    "-c", settings.DCM2BIDS_CONFIG,
+                                    "-o", directory_o,
+                                    "--forceDcm2niix",
+                                ])
+
+                                filename_o = directory_r + archivo.path.split('/')[-1] + 'nii'
+                                directory_r = directory_o + 'tmp_dcm2bids/sub-' + archivo.path.split('/')[-1] + '/'
+
+                                shutil.make_archive(
+                                    filename_o,
+                                    'zip',
+                                    directory_r
+                                )
+
+                                # checking whether file exists or not
+                                if os.path.exists(directory_o):
+                                    # removing the file using the os.remove() method
+                                    shutil.rmtree(directory_o, ignore_errors=True)
+                                else:
+                                    # file not found message
+                                    print("File not found in the directory")
+
+                                filename_o = filename_o[(filename_o.index('/media/')+7):len(filename_o)]
+
+                                additional_data_file = AdditionalDataFile()
+                                additional_data_file.additional_data = additional_data_added
+                                additional_data_file.file.name = (filename_o + '.zip')
+                                additional_data_file.save()
+
+                            print("exito")
 
                             # httpreq = httplib2.Http()
                             #

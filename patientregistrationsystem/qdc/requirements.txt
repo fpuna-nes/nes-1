@@ -49,3 +49,4 @@ httplib2
 
 pydicom==2.2.2
 dcm2bids==2.1.6
+python-magic==0.4.24
