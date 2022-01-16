@@ -155,6 +155,7 @@ from .models import (
     RFContrast,
     SliceAcceleration,
     InPlaneSpatialEncoding,
+    FMRI,
 )
 
 from .forms import (
@@ -244,7 +245,8 @@ from .forms import (
     TimingParametersForm,
     RFContrastForm,
     SliceAccelerationForm,
-    InPlaneSpatialEncodingForm, FMRIForm,
+    InPlaneSpatialEncodingForm,
+    FMRIForm,
 )
 
 from .portal import (
@@ -13639,6 +13641,10 @@ def create_component(component, new_experiment, orig_and_clone):
         emg = get_object_or_404(EMG, pk=component.id)
         clone = EMG(emg_setting_id=orig_and_clone["emg_setting"][emg.emg_setting_id])
 
+    elif component_type == "fmri":
+        fmri = get_object_or_404(FMRI, pk=component.id)
+        clone = FMRI(fmri_setting_id=orig_and_clone["fmri_setting"][fmri.fmri_setting_id])
+
     elif component_type == "tms":
         tms = get_object_or_404(TMS, pk=component.id)
         clone = TMS(tms_setting_id=orig_and_clone["tms_setting"][tms.tms_setting_id])
@@ -14059,6 +14065,11 @@ def component_update(request, path_of_the_components):
         specific_form = EMGForm(
             request.POST or None, instance=emg, initial={"experiment": experiment}
         )
+    elif component_type == "fmri":
+        fmri = get_object_or_404(FMRI, pk=component.id)
+        specific_form = FMRIForm(
+            request.POST or None, instance=fmri, initial={"experiment": experiment}
+        )
     elif component_type == "tms":
         tms = get_object_or_404(TMS, pk=component.id)
         specific_form = TMSForm(
@@ -14424,6 +14435,10 @@ def component_add_new(request, path_of_the_components, component_type):
         specific_form = EMGForm(
             request.POST or None, initial={"experiment": experiment}
         )
+    elif component_type == "fmri":
+        specific_form = FMRIForm(
+            request.POST or None, initial={"experiment": experiment}
+        )
     elif component_type == "tms":
         specific_form = TMSForm(
             request.POST or None, initial={"experiment": experiment}
@@ -14645,6 +14660,11 @@ def component_reuse(request, path_of_the_components, component_id):
         emg = get_object_or_404(EMG, pk=component_to_add.id)
         specific_form = EMGForm(
             request.POST or None, instance=emg, initial={"experiment": experiment}
+        )
+    elif component_type == "fmri":
+        fmri = get_object_or_404(FMRI, pk=component_to_add.id)
+        specific_form = FMRIForm(
+            request.POST or None, instance=fmri, initial={"experiment": experiment}
         )
     elif component_type == "tms":
         tms = get_object_or_404(TMS, pk=component_to_add.id)

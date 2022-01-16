@@ -375,7 +375,7 @@ class FMRIForm(ModelForm):
         super(FMRIForm, self).__init__(*args, **kwargs)
         initial = kwargs.get("initial")
         if initial:
-            self.fields["fmri_setting"].queryset = EEGSetting.objects.filter(
+            self.fields["fmri_setting"].queryset = FMRISetting.objects.filter(
                 experiment=initial["experiment"]
             )
 
